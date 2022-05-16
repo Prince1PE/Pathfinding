@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "bruteforce.h"
+
 
 //Defining a bunch of unicode Charecters
 wchar_t upperHalfBlock = 0x2580;    // ▀
@@ -14,22 +16,22 @@ wchar_t rightHalfBlock = 0x2590;    // ▐
 wchar_t leftHalfBlock = 0x258C;     // ▌
 wchar_t lowerHalfBlock = 0x2584;    // ▄
 wchar_t underscore = '_';
-wchar_t whiteBlock = 0x229E;        // ⊞
+wchar_t whiteBlock = 0x2586;        // ⊞
 wchar_t enterSymbol = 0x2386;       // ⎆
 wchar_t exitSymbol = 0x23CE;        // ⏎
 
 #define gotoxy(x,y) printf("\033[%d;%dH", (y), (x)) //macro to move cursor
-#define clear() system("clear");
+#define clear() system("clear")
 
 //Create the Node class
-struct Node
-{
-    wchar_t type;
-    int colour;
-    int distance;
-    bool visited;
-    int parentNode[2];
-};
+// struct Node
+// {
+//     wchar_t type;
+//     int colour;
+//     int distance;
+//     bool visited;
+//     int parentNode[2];
+// };
 
 struct Node node;
 
@@ -120,67 +122,22 @@ void mapAdjacent(int height, int width, struct Node ranArray[height][width],int 
     
     ranArray[startNodeX][startNodeY].visited = true;
     ranArray[startNodeX][startNodeY].distance = 0;
+
+    
+
     while((
             (ranArray[1][1].visited == false) && 
             (ranArray[height - 2][width - 2].visited == false) && 
             (ranArray[1][width - 2].visited == false) && 
             (ranArray[height - 2][1].visited == false)) 
             || ranArray[exitNodeX][exitNodeY].visited == false)
-    {
-        for (int i = 1; i < height - 1; i++)
         {
-            for (int j = 1; j < width - 1; j++)
-            {
-                ranArray[startNodeX][startNodeY].colour = 8;
-                if (ranArray[i][j].distance == counter - 1)
-                {
-                    // ranArray[i][j].type = underscore;
-                    
-                    ranArray[i][j].colour = 2;
-                    x = i;
-                    y = j - 1;
-                    if (ranArray[x][y].visited == false)
-                    {
-                        ranArray[x][y].visited = true;
-                        ranArray[x][y].distance = counter;
-                        ranArray[x][y].parentNode[0] = i;
-                        ranArray[x][y].parentNode[1] = j;
-                    }
-                    x = i;
-                    y = j + 1;
-                    if (ranArray[x][y].visited == false)
-                    {
-                        ranArray[x][y].visited = true;
-                        ranArray[x][y].distance = counter;
-                        ranArray[x][y].parentNode[0] = i;
-                        ranArray[x][y].parentNode[1] = j;
-                    }
-                    x = i - 1;
-                    y = j;
-                    if (ranArray[x][y].visited == false)
-                    {
-                        ranArray[x][y].visited = true;
-                        ranArray[x][y].distance = counter;
-                        ranArray[x][y].parentNode[0] = i;
-                        ranArray[x][y].parentNode[1] = j;
-                    }
-                    x = i + 1;
-                    y = j;
-                    if (ranArray[x][y].visited == false)
-                    {
-                        ranArray[x][y].visited = true;
-                        ranArray[x][y].distance = counter;
-                        ranArray[x][y].parentNode[0] = i;
-                        ranArray[x][y].parentNode[1] = j;
-                    }
-                }
-            }
+            bruteForce(height, width, ranArray, startNodeX, startNodeY, counter);
+            counter ++;
+            clear();
+            printGrid(height, width, ranArray);
+            usleep(150000);
         }
-        counter ++;
-        clear();
-        printGrid(height, width, ranArray);
-        usleep(150000);
-    }
 }
 
 void traceBack(int height, int width, struct Node ranArray[height][width], int exitNodeX, int exitNodeY, int startNodeX, int startNodeY)

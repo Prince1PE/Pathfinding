@@ -5,6 +5,7 @@
 //Allow program to be run via commands
 //Check to see if the program is unable to complete
 //Add in something more complicated
+//Add a timer  
 
 int Play(int height, int width)
 {
@@ -86,12 +87,12 @@ int Play(int height, int width)
             int valx, valy;
             valx = y - 1;
             valy = x / 2;
+             
             clear();
             printGrid(height, width, ranArray);
             printf("(%i,%i) -> (%i,%i) - %i", valx, valy ,ranArray[valx][valy].parentNode[0], ranArray[valx][valy].parentNode[1], ranArray[valx][valy].distance);
             gotoxy(x, y);
-        }
-        
+        }    
         else if (keystroke == ' ')
         {
             int valx = y - 1;
@@ -138,6 +139,7 @@ int Play(int height, int width)
         else if (keystroke == '/')
         {
             char *buffer = (char *)malloc(100);
+            char* words;
             clear();
             printGrid(height, width, ranArray);
             printf("\n\n/");
@@ -155,13 +157,44 @@ int Play(int height, int width)
             {
                 continue;
             }
+
+            else if (strstr(buffer, "use"))
+            {
+                char* words;
+                words = strtok(buffer, " ");
+                if (strcmp(words, "use"))
+                {
+                    printf("Invalid Input1\n");
+                }
+                words = strtok(NULL, " ");
+                if (words == NULL)
+                {
+                    printf("Invalid Input2\n");
+                }
+                else if (strlen(words) > 1)
+                {
+                    printf("Invalid input3\n");
+                }
+                else if (strcmp(words, "bruteforce") == 0)
+                {
+                    mapAdjacent(height, width, ranArray, startNodeX, startNodeY, exitNodeX, exitNodeY);
+                    traceBack(height, width, ranArray, exitNodeX, exitNodeY, startNodeX, startNodeY);
+                    clear();
+                    printGrid(height, width, ranArray);
+                    makeGrid(height, width, ranArray);
+                    gotoxy(x, y);
+                }
+                else{
+                    printf("Invalid Input4\n");
+                }
             
-            
-            
+            }
+
             else
             {
                 printf("That command doesn't exist");
             }
+            free(buffer);
         }
         else if (keystroke == 'e')
         {
@@ -188,6 +221,7 @@ int Play(int height, int width)
 
         else if (keystroke == 'm')
         {
+            
             mapAdjacent(height, width, ranArray, startNodeX, startNodeY, exitNodeX, exitNodeY);
             traceBack(height, width, ranArray, exitNodeX, exitNodeY, startNodeX, startNodeY);
             clear();
