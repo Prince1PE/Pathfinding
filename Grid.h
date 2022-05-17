@@ -23,15 +23,6 @@ wchar_t exitSymbol = 0x23CE;        // ⏎
 #define gotoxy(x,y) wprintf(L"\033[%d;%dH", (y), (x)) //macro to move cursor
 #define clear() wprintf(L"\e[1;1H\e[2J")
 
-//Create the Node class
-// struct Node
-// {
-//     wchar_t type;
-//     int colour;
-//     int distance;
-//     bool visited;
-//     int parentNode[2];
-// };
 
 struct Node node;
 
@@ -113,12 +104,13 @@ void printGrid(int height, int width,struct Node ranArray[height][width])
     }
 }
 
-void mapAdjacent(int height, int width, struct Node ranArray[height][width],int startNodeX, int startNodeY, int exitNodeX, int exitNodeY)
+int mapAdjacent(int height, int width, struct Node ranArray[height][width],int startNodeX, int startNodeY, int exitNodeX, int exitNodeY)
 {
     int counter = 1;
     int x,y;
     clear();
     int valx, valy;
+    int currentCovered, pastCovered;
     
     ranArray[startNodeX][startNodeY].visited = true;
     ranArray[startNodeX][startNodeY].distance = 0;
@@ -132,7 +124,12 @@ void mapAdjacent(int height, int width, struct Node ranArray[height][width],int 
             (ranArray[height - 2][1].visited == false)) 
             || ranArray[exitNodeX][exitNodeY].visited == false)
         {
-            bruteForce(height, width, ranArray, startNodeX, startNodeY, counter);
+            currentCovered = bruteForce(height, width, ranArray, startNodeX, startNodeY, counter, currentCovered);
+            if (currentCovered == pastCovered)
+            {
+                return 0;
+            }
+            else{pastCovered = currentCovered;}
             counter ++;
             clear();
             printGrid(height, width, ranArray);

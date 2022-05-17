@@ -16,13 +16,11 @@ void mapSurrounding(int height, int width, struct Node ranArray[height][width],i
         ranArray[x][y].parentNode[1] = j;
     }
 
-int bruteForce(int height, int width, struct Node ranArray[height][width],int startNodeX, int startNodeY, int counter)  
+int bruteForce(int height, int width, struct Node ranArray[height][width],int startNodeX, int startNodeY, int counter, int checkCount)  
 {
     int x, y, valx, valy;
-    bool froze;
     for (int i = 1; i < height - 1; i++)
     {
-        froze = true;
         for (int j = 1; j < width - 1; j++)
         {
             ranArray[startNodeX][startNodeY].colour = 8;
@@ -35,32 +33,32 @@ int bruteForce(int height, int width, struct Node ranArray[height][width],int st
                 if (ranArray[x][y].visited == false)//left
                 {
                     mapSurrounding(height, width, ranArray, counter, x, y, i, j);
-                    froze = false;
+                    checkCount++;
                 }
                 x = i;
                 y = j + 1;
                 if (ranArray[x][y].visited == false)//right
                 {
                     mapSurrounding(height, width, ranArray, counter, x, y, i, j);
-                    froze = false;
+                    checkCount++;
                 }
                 x = i - 1;
                 y = j;
                 if (ranArray[x][y].visited == false)//Up
                 {
                     mapSurrounding(height, width, ranArray, counter, x, y, i, j);
-                    froze = false;
+                    checkCount++;
                 }
                 x = i + 1;
                 y = j;
                 if (ranArray[x][y].visited == false)//Down
                 {
                     mapSurrounding(height, width, ranArray, counter, x, y, i, j);
-                    froze = false;
+                    checkCount++;
                 }
             }
         
         }
     }
-    return 0;
+    return checkCount;
 }
