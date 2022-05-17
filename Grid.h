@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "bruteforce.h"
-
+#include "class.h"
 
 //Defining a bunch of unicode Charecters
 wchar_t upperHalfBlock = 0x2580;    // ▀

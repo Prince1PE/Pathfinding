@@ -1,12 +1,4 @@
-//Create the Node class
-struct Node
-{
-    wchar_t type;
-    int colour;
-    int distance;
-    bool visited;
-    int parentNode[2];
-};
+#include "class.h"
 
 void mapSurrounding(int height, int width, struct Node ranArray[height][width],int counter, int x, int y, int i, int j)
     {
