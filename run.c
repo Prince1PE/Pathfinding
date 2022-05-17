@@ -226,6 +226,7 @@ int Play(int height, int width)
             traceBack(height, width, ranArray, exitNodeX, exitNodeY, startNodeX, startNodeY);
             clear();
             printGrid(height, width, ranArray);
+            wprintf(L"%s Optimal Path Found!!!", changeColours(3));
             makeGrid(height, width, ranArray);
             gotoxy(x, y);
         }
@@ -236,24 +237,8 @@ int Play(int height, int width)
              while(true)
             {
                 clear();
-                for (int i = 0; i < height; i++)
-                    {
-                        for (int j = 0; j < width; j++)
-                        {
-                            if(ranArray[i][j].type == whiteBlock)
-                            {
-                                printf("%s", changeColours(ranArray[i][j].colour));
-                                printf("⊞ ");
-                            }
-                            else
-                            {
-                                printf("  ");
-                            }
-                        }
-                        printf("\n");
-                    }
-                printf("%s", changeColours(8));
-                printf("Are you sure you want to stop? ('y/n')");
+                wprintf(L"%s", changeColours(8));
+                wprintf(L"Are you sure you want to stop? ('y/n')");
                 scanf("%c", &quit);
                 if (quit == 'y' || quit == 'Y')
                 {
@@ -276,11 +261,7 @@ int Play(int height, int width)
             }
         }
     }
-    tcsetattr( STDIN_FILENO, TCSANOW, &oldt); //restoring original terminal configuration
-    system("wmctrl -F -r :ACTIVE: -b remove,fullscreen");
-    system("wmctrl -r :ACTIVE: -b toggle,maximized_vert,maximized_horz");
-    system("clear");
-    return 0;
+   
 }
 
 

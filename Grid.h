@@ -20,8 +20,8 @@ wchar_t whiteBlock = 0x2586;        // ⊞
 wchar_t enterSymbol = 0x2386;       // ⎆
 wchar_t exitSymbol = 0x23CE;        // ⏎
 
-#define gotoxy(x,y) printf("\033[%d;%dH", (y), (x)) //macro to move cursor
-#define clear() system("clear")
+#define gotoxy(x,y) wprintf(L"\033[%d;%dH", (y), (x)) //macro to move cursor
+#define clear() wprintf(L"\e[1;1H\e[2J")
 
 //Create the Node class
 // struct Node
@@ -90,7 +90,7 @@ void printGrid(int height, int width,struct Node ranArray[height][width])
     {
         for (int j = 0; j < width; j++)
         {
-            printf("%s", changeColours(ranArray[i][j].colour));
+            wprintf(L"%s", changeColours(ranArray[i][j].colour));
             wprintf(L"%lc", ranArray[i][j].type); //This is all it should take
 
             if (j == width - 2)
@@ -105,11 +105,11 @@ void printGrid(int height, int width,struct Node ranArray[height][width])
 
             else if ((i > 0 && j > 0) && (i < height - 1) && (j < width - 1))
             {
-                printf("\033[0;37m");
-                printf("|");
+                wprintf(L"\033[0;37m");
+                wprintf(L"|");
             }
         }
-        printf("\n");
+        wprintf(L"\n");
     }
 }
 
