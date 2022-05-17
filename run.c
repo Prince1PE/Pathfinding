@@ -221,21 +221,29 @@ int Play(int height, int width)
 
         else if (keystroke == 'm')
         {
-            
-            if(mapAdjacent(height, width, ranArray, startNodeX, startNodeY, exitNodeX, exitNodeY))
+            if(checkCondition(height, width, ranArray, enterSymbol, exitSymbol))
             {
-                traceBack(height, width, ranArray, exitNodeX, exitNodeY, startNodeX, startNodeY);
-                clear();
-                printGrid(height, width, ranArray);
-                wprintf(L"%s Optimal Path Found!!!", changeColours(3));
+                if(mapAdjacent(height, width, ranArray, startNodeX, startNodeY, exitNodeX, exitNodeY))
+                {
+                    traceBack(height, width, ranArray, exitNodeX, exitNodeY, startNodeX, startNodeY);
+                    clear();
+                    printGrid(height, width, ranArray);
+                    wprintf(L"%s Optimal Path Found!!!", changeColours(3));
+                }
+                else
+                {
+                    clear();
+                    printGrid(height, width, ranArray);
+                    wprintf(L"%s PATH NOT FOUND", changeColours(2));
+                }
+                makeGrid(height, width, ranArray);
             }
             else
             {
                 clear();
                 printGrid(height, width, ranArray);
-                wprintf(L"%s PATH NOT FOUND", changeColours(2));
+                wprintf(L"%s Enter an exit & entry node\n", changeColours(4));
             }
-            makeGrid(height, width, ranArray);
             gotoxy(x, y);
         }
         

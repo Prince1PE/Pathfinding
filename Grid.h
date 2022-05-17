@@ -135,6 +135,7 @@ int mapAdjacent(int height, int width, struct Node ranArray[height][width],int s
             printGrid(height, width, ranArray);
             usleep(150000);
         }
+        return 1;
 }
 
 void traceBack(int height, int width, struct Node ranArray[height][width], int exitNodeX, int exitNodeY, int startNodeX, int startNodeY)
@@ -193,5 +194,28 @@ void makeGrid(int height, int width, struct Node ranArray[height][width])
                 ranArray[i][j].distance = -1;
             }
         }
+    }
+}
+
+bool checkCondition(int height, int width, struct Node ranArray[height][width], wchar_t entryNode, wchar_t exitNode)
+{
+    int check = 0;
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            if (ranArray[i][j].type == entryNode || ranArray[i][j].type == exitNode)
+            {
+                check++;
+            }
+        }
+    }
+    if (check < 2)
+    {
+        return false;   
+    }
+    else
+    {
+        return true;
     }
 }
