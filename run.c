@@ -1,13 +1,10 @@
 #include "Grid.h"
 
 //TODO
-//Make sure program only runs if both enter and exit are present ✓
 //Allow program to be run via commands
-//Check to see if the program is unable to complete✓
-//Add better files management✓
-//Make better comments✓
 //Add in something more complicated
 //Add a timer  
+//Export Map
 
 int Play(int height, int width)
 {
@@ -16,11 +13,11 @@ int Play(int height, int width)
     char quit;          //Used for the quit command
     int x = width;
     int y = height;
-    height += 2;
+    height += 2;    //takes into account, the top, bottom, left & right walls
     width += 2;
     struct Node ranArray[height][width];    //Makes an array of nodes
     node.type = upperHalfBlock; //Sets the default node charecter
-    int colour = 8;
+    int colour = 8;             //Sets the default colour to white
     setlocale(LC_CTYPE, "");    //Allows you to enter unicode charecters
 
     int keystroke;
@@ -36,9 +33,12 @@ int Play(int height, int width)
     printGrid(height, width, ranArray);
     gotoxy(x, y);
     int startNodeX, startNodeY, exitNodeX, exitNodeY;
+    int valx, valy;
 
     while (loop)
     {
+        valx = y - 1; //Dont question it
+        valy = x / 2;
         keystroke = getchar();
         if (keystroke == 'w')//Move up
         {
@@ -62,7 +62,7 @@ int Play(int height, int width)
             x -= 2;
             gotoxy(x,y);
         }
-        else if (keystroke == 's')
+        else if (keystroke == 's')//Move Down
         {
             if (y == height - 1)
             {
@@ -73,7 +73,7 @@ int Play(int height, int width)
             y ++;
             gotoxy(x,y);
         }
-        else if (keystroke == 'd')
+        else if (keystroke == 'd')//Move Right
         {
             if (x >= (width * 2) - 4)
             {
@@ -86,19 +86,13 @@ int Play(int height, int width)
         }
         else if (keystroke == 'g')  //Troubleshooting key
         {
-            int valx, valy;
-            valx = y - 1;
-            valy = x / 2;
-             
             clear();
             printGrid(height, width, ranArray);
             printf("(%i,%i) -> (%i,%i) - %i", valx, valy ,ranArray[valx][valy].parentNode[0], ranArray[valx][valy].parentNode[1], ranArray[valx][valy].distance);
             gotoxy(x, y);
         }    
-        else if (keystroke == ' ')
+        else if (keystroke == ' ')//Places Block
         {
-            int valx = y - 1;
-            int valy = x / 2;
             if (ranArray[valx][valy].type == '_')
             {
                 ranArray[valx][valy].type = whiteBlock;
@@ -119,7 +113,7 @@ int Play(int height, int width)
             printGrid(height, width, ranArray);
             gotoxy(x, y);
         }    
-        else if (keystroke == 'h')
+        else if (keystroke == 'h')//Shows help menu
         {
             if(help)
             {
@@ -138,7 +132,7 @@ int Play(int height, int width)
                 printGrid(height, width, ranArray);
             }
         }        
-        else if (keystroke == '/')
+        else if (keystroke == '/')  //Ignore this, im going to truy and make this work later
         {
             char *buffer = (char *)malloc(100);
             char* words;
@@ -198,10 +192,8 @@ int Play(int height, int width)
             }
             free(buffer);
         }
-        else if (keystroke == 'e')
+        else if (keystroke == 'e') //Places an entry node
         {
-            int valx = y - 1;
-            int valy = x / 2;
             replaceGridChars(valx, valy, enterSymbol, height, width, ranArray);
             startNodeX = valx;
             startNodeY = valy;
@@ -209,10 +201,8 @@ int Play(int height, int width)
             printGrid(height, width, ranArray);
             gotoxy(x, y);
         }
-        else if (keystroke == 'r')
+        else if (keystroke == 'r')  //Places a return node
         {
-            int valx = y - 1;
-            int valy = x / 2;
             replaceGridChars(valx, valy, exitSymbol, height, width, ranArray);
             exitNodeX = valx;
             exitNodeY = valy;
@@ -220,8 +210,8 @@ int Play(int height, int width)
             printGrid(height, width, ranArray);
             gotoxy(x, y);
         }
-        else if (keystroke == 'm')
-        {
+        else if (keystroke == 'm')//Runs bruteforce method
+        {   //This should be ran using the command line
             if(checkCondition(height, width, ranArray, enterSymbol, exitSymbol))
             {
                 double timeTaken = mapAdjacent(height, width, ranArray, startNodeX, startNodeY, exitNodeX, exitNodeY);
@@ -249,21 +239,21 @@ int Play(int height, int width)
             }
             gotoxy(x, y);
         }
-        else if (keystroke == 'i')
+        else if (keystroke == 'i')  //HERE IS THE PROBLEM
         {
             char* readfile = "./examples/maze2.txt";
             height = countlines(readfile);
             width = countrows(readfile);
             x = width - 2;
             y = height - 2;
-            struct Node ranArray[height][width];
-            makeGrid(height, width, ranArray);
+            // struct Node ranArray[height][width];
+            // makeGrid(height, width, ranArray);
             importGrid(height, width, ranArray, readfile);
             clear();
             printGrid(height, width, ranArray);
             gotoxy(x,y);
         }
-        else if(keystroke == 'o')
+        else if(keystroke == 'o') //Output file
         {
             char* writefile = "./examples/maze2.txt";
             writeGrid(height, width, ranArray, writefile);
@@ -271,8 +261,7 @@ int Play(int height, int width)
             printGrid(height, width, ranArray);
             wprintf(L"%s File has been saved to: %s\n", changeColours(4), writefile);
         }
-        
-        else if (keystroke == 'q')
+        else if (keystroke == 'q') //Quits the program
         {
              while(true)
             {

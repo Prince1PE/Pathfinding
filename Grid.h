@@ -26,8 +26,8 @@ wchar_t exitSymbol = 0x23CE;        // ⏎
 
 
 struct Node node;
-
-int replaceGridChars(int placeX, int placeY, wchar_t placeChar, int height, int width, struct Node ranArray[height][width])
+//Used to make sure there is no repeats of return or enter charecters
+int replaceGridChars(int placeX, int placeY, wchar_t placeChar, int height, int width, struct Node ranArray[height][width]) 
 {
     for (int i = 0; i < height; i++)
     {
@@ -83,7 +83,7 @@ void printGrid(int height, int width,struct Node ranArray[height][width])
         for (int j = 0; j < width; j++)
         {
             wprintf(L"%s", changeColours(ranArray[i][j].colour));
-            wprintf(L"%lc", ranArray[i][j].type); //This is all it should take
+            wprintf(L"%lc", ranArray[i][j].type);
 
             if (j == width - 2)
             {
@@ -117,8 +117,8 @@ double mapAdjacent(int height, int width, struct Node ranArray[height][width],in
     ranArray[startNodeX][startNodeY].distance = 0;
 
     
-    clock_t begin = clock();
-    while((
+    clock_t begin = clock();    //Figure out why this wont work
+        while((
             (ranArray[1][1].visited == false) && 
             (ranArray[height - 2][width - 2].visited == false) && 
             (ranArray[1][width - 2].visited == false) && 
@@ -153,7 +153,7 @@ void traceBack(int height, int width, struct Node ranArray[height][width], int e
         ranArray[backX][backY].type = dot;
         ranArray[exitNodeX][exitNodeY].type = exitSymbol;
         ranArray[exitNodeX][exitNodeY].colour = 8;
-        tempX = ranArray[backX][backY].parentNode[0];
+        tempX = ranArray[backX][backY].parentNode[0];   //Probably inneficient
         tempY = ranArray[backX][backY].parentNode[1];
         backX = tempX;
         backY = tempY;
@@ -200,7 +200,7 @@ void makeGrid(int height, int width, struct Node ranArray[height][width])
     }
 }
 
-bool checkCondition(int height, int width, struct Node ranArray[height][width], wchar_t entryNode, wchar_t exitNode)
+bool checkCondition(int height, int width, struct Node ranArray[height][width], wchar_t entryNode, wchar_t exitNode)    //Checks for entry and exit nodes within the program
 {
     int check = 0;
     for (int i = 0; i < height; i++)
