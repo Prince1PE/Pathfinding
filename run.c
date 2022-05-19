@@ -1,9 +1,11 @@
 #include "Grid.h"
 
 //TODO
-//Make sure program only runs if both enter and exit are present
+//Make sure program only runs if both enter and exit are present ✓
 //Allow program to be run via commands
-//Check to see if the program is unable to complete
+//Check to see if the program is unable to complete✓
+//Add better files management✓
+//Make better comments✓
 //Add in something more complicated
 //Add a timer  
 
@@ -218,17 +220,18 @@ int Play(int height, int width)
             printGrid(height, width, ranArray);
             gotoxy(x, y);
         }
-
         else if (keystroke == 'm')
         {
             if(checkCondition(height, width, ranArray, enterSymbol, exitSymbol))
             {
-                if(mapAdjacent(height, width, ranArray, startNodeX, startNodeY, exitNodeX, exitNodeY))
+                double timeTaken = mapAdjacent(height, width, ranArray, startNodeX, startNodeY, exitNodeX, exitNodeY);
+                if(timeTaken)
                 {
                     traceBack(height, width, ranArray, exitNodeX, exitNodeY, startNodeX, startNodeY);
                     clear();
                     printGrid(height, width, ranArray);
-                    wprintf(L"%s Optimal Path Found!!!", changeColours(3));
+                    wprintf(L"%s Optimal Path Found!!!\n", changeColours(3));
+                    wprintf(L"This took %f seconds\n", timeTaken);
                 }
                 else
                 {
@@ -246,7 +249,28 @@ int Play(int height, int width)
             }
             gotoxy(x, y);
         }
-        
+        else if (keystroke == 'i')
+        {
+            char* readfile = "./examples/maze2.txt";
+            height = countlines(readfile);
+            width = countrows(readfile);
+            x = width - 2;
+            y = height - 2;
+            struct Node ranArray[height][width];
+            makeGrid(height, width, ranArray);
+            importGrid(height, width, ranArray, readfile);
+            clear();
+            printGrid(height, width, ranArray);
+            gotoxy(x,y);
+        }
+        else if(keystroke == 'o')
+        {
+            char* writefile = "./examples/maze2.txt";
+            writeGrid(height, width, ranArray, writefile);
+            clear();
+            printGrid(height, width, ranArray);
+            wprintf(L"%s File has been saved to: %s\n", changeColours(4), writefile);
+        }
         
         else if (keystroke == 'q')
         {

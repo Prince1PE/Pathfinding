@@ -2,6 +2,7 @@
 #include <string.h>
 #include <wchar.h>
 #include <locale.h>
+#include <time.h>
 #include <termios.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -104,7 +105,7 @@ void printGrid(int height, int width,struct Node ranArray[height][width])
     }
 }
 
-int mapAdjacent(int height, int width, struct Node ranArray[height][width],int startNodeX, int startNodeY, int exitNodeX, int exitNodeY)
+double mapAdjacent(int height, int width, struct Node ranArray[height][width],int startNodeX, int startNodeY, int exitNodeX, int exitNodeY)
 {
     int counter = 1;
     int x,y;
@@ -116,7 +117,7 @@ int mapAdjacent(int height, int width, struct Node ranArray[height][width],int s
     ranArray[startNodeX][startNodeY].distance = 0;
 
     
-
+    clock_t begin = clock();
     while((
             (ranArray[1][1].visited == false) && 
             (ranArray[height - 2][width - 2].visited == false) && 
@@ -135,7 +136,9 @@ int mapAdjacent(int height, int width, struct Node ranArray[height][width],int s
             printGrid(height, width, ranArray);
             usleep(150000);
         }
-        return 1;
+        clock_t end = clock();
+        double time_taken = (double) ((end - begin) / 1000);
+        return time_taken; 
 }
 
 void traceBack(int height, int width, struct Node ranArray[height][width], int exitNodeX, int exitNodeY, int startNodeX, int startNodeY)
@@ -218,4 +221,133 @@ bool checkCondition(int height, int width, struct Node ranArray[height][width], 
     {
         return true;
     }
+}
+
+
+
+
+
+
+void importGrid(int height, int width, struct Node ranArray[height][width], char* filename)
+{
+    FILE *fp = fopen(filename, "r");
+    char buffer[500];
+    char* token;
+    for (int i = 0; i < height; i++)
+    {
+        fgets(buffer, 500, (FILE*) fp);
+        token = strtok(buffer, ",");
+        for (int j = 0; j < width; j++)
+        {
+            ranArray[i][j].colour = 8;
+            ranArray[i][j].visited = true;
+            ranArray[i][j].parentNode[0] = 0;
+            ranArray[i][j].parentNode[1] = 0;
+            if(i == 0)
+            {
+                ranArray[i][j].type = lowerHalfBlock;
+            }    //The top row is the upper half blocks
+
+            else if(i == height - 1)
+            {
+                ranArray[i][j].type = upperHalfBlock;
+            } //The bottom row is lower half blocks
+            else if(j == 0)
+            {
+                ranArray[i][j].type = leftHalfBlock;
+            }    //The left row is left half
+            else if(j == width - 1)
+            {
+                ranArray[i][j].type = rightHalfBlock;
+            }   //The right row is right hlaf
+            else
+            {
+                if(strcmp(token, "1") == 0)
+                {
+                    ranArray[i][j].type = whiteBlock;
+                }
+                else
+                {
+                    ranArray[i][j].type = underscore;
+                }
+                ranArray[i][j].visited = false;
+                ranArray[i][j].distance = -1;
+            }
+            token = strtok(NULL, ",");
+        }
+    }
+}
+
+int countlines(char *filename)
+{
+  // count the number of lines in the file called filename                                    
+  FILE *fp = fopen(filename,"r");
+  int ch=0;
+  int lines=0;
+
+  if (fp == NULL)
+  {
+    return 0;
+  }
+
+  lines++;
+  while(!feof(fp))  //Find alternative: https://stackoverflow.com/questions/5431941/why-is-while-feof-file-always-wrong
+    {
+        ch = fgetc(fp);
+        if(ch == '\n')
+        {
+            lines++;
+        }
+    }
+  fclose(fp);
+  return lines;
+}
+
+int countrows(char *filename)
+{
+    FILE *fp = fopen(filename,"r");
+    char buffer[500];
+    fgets(buffer, 500, (FILE*) fp);
+    int count = 0;
+    int elements = 0;
+    while (buffer[count] != '\n')
+    {
+        if (buffer[count] == ',')
+        {
+            elements++;
+            count++;
+        }
+        else
+        {
+            count++;
+        }
+    }
+    fclose(fp);
+    return elements;
+}
+
+void writeGrid(int height, int width, struct Node ranArray[height][width], char*filename)
+{
+    FILE *fptr = fopen(filename, "w");
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            if(ranArray[i][j].type == 9094 || ranArray[i][j].type == 9166)
+            {
+                continue;
+            }
+            else if(ranArray[i][j].type == 9606)
+            {
+                fprintf(fptr, "1,");
+            }
+            else
+            {
+                fprintf(fptr, "0,");
+            }
+        }
+        fprintf(fptr, "\n");
+    }
+    fclose(fptr);
+
 }
