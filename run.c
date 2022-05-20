@@ -1,4 +1,5 @@
 #include "Grid.h"
+#include <sys/time.h>
 
 //TODO
 //Allow program to be run via commands
@@ -15,7 +16,7 @@ int Play(int height, int width)
     int y = height;
     height += 2;    //takes into account, the top, bottom, left & right walls
     width += 2;
-    struct Node ranArray[height][width];    //Makes an array of nodes
+    struct Node *ranArray[height];    //Makes an array of nodes
     node.type = upperHalfBlock; //Sets the default node charecter
     int colour = 8;             //Sets the default colour to white
     setlocale(LC_CTYPE, "");    //Allows you to enter unicode charecters
@@ -214,14 +215,18 @@ int Play(int height, int width)
         {   //This should be ran using the command line
             if(checkCondition(height, width, ranArray, enterSymbol, exitSymbol))
             {
-                double timeTaken = mapAdjacent(height, width, ranArray, startNodeX, startNodeY, exitNodeX, exitNodeY);
-                if(timeTaken)
+                struct timeval start, stop;
+                double time_taken = 0;
+                gettimeofday(&start, NULL);
+                if(mapAdjacent(height, width, ranArray, startNodeX, startNodeY, exitNodeX, exitNodeY))
                 {
                     traceBack(height, width, ranArray, exitNodeX, exitNodeY, startNodeX, startNodeY);
                     clear();
                     printGrid(height, width, ranArray);
+                    gettimeofday(&stop, NULL);
+                    time_taken = (double) (stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
                     wprintf(L"%s Optimal Path Found!!!\n", changeColours(3));
-                    wprintf(L"This took %f seconds\n", timeTaken);
+                    wprintf(L"This took %f seconds\n", time_taken);
                 }
                 else
                 {
@@ -229,6 +234,7 @@ int Play(int height, int width)
                     printGrid(height, width, ranArray);
                     wprintf(L"%s PATH NOT FOUND", changeColours(2));
                 }
+                freeGrid(height, width, ranArray);
                 makeGrid(height, width, ranArray);
             }
             else
@@ -239,23 +245,24 @@ int Play(int height, int width)
             }
             gotoxy(x, y);
         }
-        else if (keystroke == 'i')  //HERE IS THE PROBLEM
+        else if (keystroke == 'i')
         {
-            char* readfile = "./examples/maze2.txt";
-            height = countlines(readfile);
+            char* readfile = "./examples/bigmaze.txt";
+            freeGrid(height, width, ranArray);
+            height = countlines(readfile) - 1;
             width = countrows(readfile);
+            makeGrid(height, width, ranArray);
+            importGrid(height, width, ranArray, readfile);
             x = width - 2;
             y = height - 2;
-            // struct Node ranArray[height][width];
-            // makeGrid(height, width, ranArray);
-            importGrid(height, width, ranArray, readfile);
             clear();
             printGrid(height, width, ranArray);
+            wprintf(L"%s File has been successfully imorted", changeColours(4));
             gotoxy(x,y);
         }
         else if(keystroke == 'o') //Output file
         {
-            char* writefile = "./examples/maze2.txt";
+            char* writefile = "./examples/maze2.txt";   //Make command line do this
             writeGrid(height, width, ranArray, writefile);
             clear();
             printGrid(height, width, ranArray);
@@ -290,7 +297,7 @@ int Play(int height, int width)
             }
         }
     }
-   
+    freeGrid(height, width, ranArray);
 }
 
 

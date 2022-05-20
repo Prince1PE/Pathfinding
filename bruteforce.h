@@ -1,6 +1,6 @@
 #include "class.h"
 
-void mapSurrounding(int height, int width, struct Node ranArray[height][width],int counter, int x, int y, int i, int j)
+void mapSurrounding(int height, int width, struct Node* ranArray[height],int counter, int x, int y, int i, int j)
     {
         ranArray[x][y].visited = true;
         ranArray[x][y].distance = counter;
@@ -8,7 +8,7 @@ void mapSurrounding(int height, int width, struct Node ranArray[height][width],i
         ranArray[x][y].parentNode[1] = j;
     }
 
-int bruteForce(int height, int width, struct Node ranArray[height][width],int startNodeX, int startNodeY, int counter, int checkCount)  
+int bruteForce(int height, int width, struct Node* ranArray[height],int startNodeX, int startNodeY, int counter, int checkCount)  
 {
     int x, y, valx, valy;
     for (int i = 1; i < height - 1; i++)

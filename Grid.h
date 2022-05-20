@@ -27,7 +27,7 @@ wchar_t exitSymbol = 0x23CE;        // ⏎
 
 struct Node node;
 //Used to make sure there is no repeats of return or enter charecters
-int replaceGridChars(int placeX, int placeY, wchar_t placeChar, int height, int width, struct Node ranArray[height][width]) 
+int replaceGridChars(int placeX, int placeY, wchar_t placeChar, int height, int width, struct Node* ranArray[height]) 
 {
     for (int i = 0; i < height; i++)
     {
@@ -76,7 +76,7 @@ const char* changeColours(int colour)
     }
 }
 
-void printGrid(int height, int width,struct Node ranArray[height][width])
+void printGrid(int height, int width,struct Node* ranArray[height])
 {
     for (int i = 0; i < height; i++)
     {
@@ -105,7 +105,7 @@ void printGrid(int height, int width,struct Node ranArray[height][width])
     }
 }
 
-double mapAdjacent(int height, int width, struct Node ranArray[height][width],int startNodeX, int startNodeY, int exitNodeX, int exitNodeY)
+double mapAdjacent(int height, int width, struct Node* ranArray[height],int startNodeX, int startNodeY, int exitNodeX, int exitNodeY)
 {
     int counter = 1;
     int x,y;
@@ -115,9 +115,7 @@ double mapAdjacent(int height, int width, struct Node ranArray[height][width],in
     
     ranArray[startNodeX][startNodeY].visited = true;
     ranArray[startNodeX][startNodeY].distance = 0;
-
     
-    clock_t begin = clock();    //Figure out why this wont work
         while((
             (ranArray[1][1].visited == false) && 
             (ranArray[height - 2][width - 2].visited == false) && 
@@ -136,12 +134,10 @@ double mapAdjacent(int height, int width, struct Node ranArray[height][width],in
             printGrid(height, width, ranArray);
             usleep(150000);
         }
-        clock_t end = clock();
-        double time_taken = (double) ((end - begin) / 1000);
-        return time_taken; 
+        return 1; 
 }
 
-void traceBack(int height, int width, struct Node ranArray[height][width], int exitNodeX, int exitNodeY, int startNodeX, int startNodeY)
+void traceBack(int height, int width, struct Node* ranArray[height], int exitNodeX, int exitNodeY, int startNodeX, int startNodeY)
 {
     int backX = exitNodeX;
     int backY = exitNodeY;
@@ -163,8 +159,10 @@ void traceBack(int height, int width, struct Node ranArray[height][width], int e
     }
 }
 
-void makeGrid(int height, int width, struct Node ranArray[height][width])
+void makeGrid(int height, int width, struct Node* ranArray[height])
 {
+    for(int i = 0; i < height; i++){ranArray[i] = (struct Node*) malloc(width * sizeof(struct Node));}
+
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
@@ -200,7 +198,16 @@ void makeGrid(int height, int width, struct Node ranArray[height][width])
     }
 }
 
-bool checkCondition(int height, int width, struct Node ranArray[height][width], wchar_t entryNode, wchar_t exitNode)    //Checks for entry and exit nodes within the program
+void freeGrid(int height, int width, struct Node* ranArray[height])
+{
+    for (int i = 0; i < height; i++)
+    {
+        free(ranArray[i]);
+    }
+    free(ranArray);
+}
+
+bool checkCondition(int height, int width, struct Node* ranArray[height], wchar_t entryNode, wchar_t exitNode)    //Checks for entry and exit nodes within the program
 {
     int check = 0;
     for (int i = 0; i < height; i++)
@@ -228,7 +235,7 @@ bool checkCondition(int height, int width, struct Node ranArray[height][width], 
 
 
 
-void importGrid(int height, int width, struct Node ranArray[height][width], char* filename)
+void importGrid(int height, int width, struct Node* ranArray[height], char* filename)
 {
     FILE *fp = fopen(filename, "r");
     char buffer[500];
@@ -265,13 +272,16 @@ void importGrid(int height, int width, struct Node ranArray[height][width], char
                 if(strcmp(token, "1") == 0)
                 {
                     ranArray[i][j].type = whiteBlock;
+                    ranArray[i][j].visited = true;
+                    ranArray[i][j].distance = 999;
+                    ranArray[i][j].colour = 8;
                 }
                 else
                 {
                     ranArray[i][j].type = underscore;
+                    ranArray[i][j].visited = false;
+                    ranArray[i][j].distance = -1;
                 }
-                ranArray[i][j].visited = false;
-                ranArray[i][j].distance = -1;
             }
             token = strtok(NULL, ",");
         }
@@ -326,7 +336,7 @@ int countrows(char *filename)
     return elements;
 }
 
-void writeGrid(int height, int width, struct Node ranArray[height][width], char*filename)
+void writeGrid(int height, int width, struct Node* ranArray[height], char*filename)
 {
     FILE *fptr = fopen(filename, "w");
     for (int i = 0; i < height; i++)
