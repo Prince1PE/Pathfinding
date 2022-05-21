@@ -356,3 +356,8 @@ void writeGrid(int height, int width, char*filename)
     fclose(fptr);
 
 }
+
+void checkFile(char* filename)
+{
+    DIR 
+}

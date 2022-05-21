@@ -139,61 +139,130 @@ int Play(int height, int width)
         else if (keystroke == '/')  //Ignore this, im going to truy and make this work later
         {
             char *buffer = (char *)malloc(100);
-            char* words;
+            char* word;
+            int counter = 0;
+            char* command[20];
             clear();
             printGrid(height, width);
-            printf("\n\n/");
-            char command[100];
+            wprintf(L"\n\n/");
             char c;
-        while ((c = getchar()) != '\n' && c != EOF && c != 127)
-            {
-                printf("%c", c);
-                strncat(command, &c, 1);
-            }      
+
+            while ((c = getchar()) != '\n' && c != EOF && strlen(buffer) != 100)
+                {
+                    if (c == 127 && strlen(buffer) != 0)
+                    {
+                        buffer[strlen(buffer) - 1] = '\0';
+                        clear();
+                        printGrid(height, width);
+                        wprintf(L"\n\n/%s", buffer);
+                    }
+                    else
+                    {
+                        wprintf(L"%c", c);
+                        strncat(buffer, &c, 1);
+                    }
+                }      
             clear();
             printGrid(height, width);
-            printf("(%s)", command);
+            word = strtok(buffer, " ");
+            command[0] = word;
+
+            while(word != NULL)
+            {
+                command[counter] = word;
+                counter++;
+                word = strtok(NULL, " ");
+            }
+
             if(c == 127)
             {
                 continue;
             }
 
-            else if (strstr(buffer, "use"))
+            else if(strlen(buffer) == 100)
             {
-                char* words;
-                words = strtok(buffer, " ");
-                if (strcmp(words, "use"))
+                wprintf(L"Stop trying to break the program >:( \n");
+            }
+            else if (strcmp(command[0], "use") == 0)
+            {
+                if (strcmp(command[1], "bruteforce") == 0)
                 {
-                    printf("Invalid Input1\n");
-                }
-                words = strtok(NULL, " ");
-                if (words == NULL)
+                    if(checkCondition(height, width, enterSymbol, exitSymbol))
+                        {
+                            struct timeval start, stop;
+                            double time_taken = 0;
+                            gettimeofday(&start, NULL);
+                            if(mapAdjacent(height, width, startNodeX, startNodeY, exitNodeX, exitNodeY))
+                            {
+                                traceBack(height, width, exitNodeX, exitNodeY, startNodeX, startNodeY);
+                                clear();
+                                printGrid(height, width);
+                                gettimeofday(&stop, NULL);
+                                time_taken = (double) (stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
+                                wprintf(L"%s Optimal Path Found!!!\n", changeColours(3));
+                                wprintf(L"This took %f seconds\n", time_taken);
+                            }
+                            else
+                            {
+                                clear();
+                                printGrid(height, width);
+                                wprintf(L"%s PATH NOT FOUND", changeColours(2));
+                            }
+                                freeGrid(height, width);
+                                makeGrid(height, width);
+                        }
+                    else
+                    {
+                        clear();
+                        printGrid(height, width);
+                        wprintf(L"%s Enter an exit & entry node\n", changeColours(4));
+                    }
+                    gotoxy(x, y);
+                    }
+                else
                 {
-                    printf("Invalid Input2\n");
-                }
-                else if (strlen(words) > 1)
-                {
-                    printf("Invalid input3\n");
-                }
-                else if (strcmp(words, "bruteforce") == 0)
-                {
-                    mapAdjacent(height, width, startNodeX, startNodeY, exitNodeX, exitNodeY);
-                    traceBack(height, width, exitNodeX, exitNodeY, startNodeX, startNodeY);
                     clear();
                     printGrid(height, width);
-                    makeGrid(height, width);
-                    gotoxy(x, y);
+                    wprintf(L"%sUnkown command\n", changeColours(4));
                 }
-                else{
-                    printf("Invalid Input4\n");
-                }
-            
             }
-
+            else if (strcmp(command[0], "clear") == 0)
+            {
+                makeGrid(height, width);
+                clear();
+                printGrid(height, width);
+                wprintf(L"%s Grid Cleared", changeColours(5));
+            }
+            else if (strcmp(command[0], "resize") == 0)
+            {
+                int resizeValueX, resizeValueY;
+                resizeValueX = atoi(command[1]);
+                if (resizeValueX)
+                {
+                    freeGrid(height, width);
+                    resizeValueY = atoi(command[2]);
+                    height = resizeValueX + 2;
+                    if(resizeValueY)
+                    {
+                        width = resizeValueY + 2;
+                    }
+                    makeGrid(height, width);
+                    clear();
+                    printGrid(height, width);
+                }
+                else
+                {
+                    wprintf(L"%sInvalid input\n", changeColours(4));
+                }
+                
+            }
             else
             {
-                printf("That command doesn't exist");
+                clear();
+                printGrid(height, width);
+                wprintf(L"%sUnkown command\n", changeColours(4));
             }
+
             free(buffer);
         }
         else if (keystroke == 'e') //Places an entry node
@@ -214,43 +283,9 @@ int Play(int height, int width)
             printGrid(height, width);
             gotoxy(x, y);
         }
-        else if (keystroke == 'm')//Runs bruteforce method
-        {   //This should be ran using the command line
-            if(checkCondition(height, width, enterSymbol, exitSymbol))
-            {
-                struct timeval start, stop;
-                double time_taken = 0;
-                gettimeofday(&start, NULL);
-                if(mapAdjacent(height, width, startNodeX, startNodeY, exitNodeX, exitNodeY))
-                {
-                    traceBack(height, width, exitNodeX, exitNodeY, startNodeX, startNodeY);
-                    clear();
-                    printGrid(height, width);
-                    gettimeofday(&stop, NULL);
-                    time_taken = (double) (stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
-                    wprintf(L"%s Optimal Path Found!!!\n", changeColours(3));
-                    wprintf(L"This took %f seconds\n", time_taken);
-                }
-                else
-                {
-                    clear();
-                    printGrid(height, width);
-                    wprintf(L"%s PATH NOT FOUND", changeColours(2));
-                }
-                freeGrid(height, width);
-                makeGrid(height, width);
-            }
-            else
-            {
-                clear();
-                printGrid(height, width);
-                wprintf(L"%s Enter an exit & entry node\n", changeColours(4));
-            }
-            gotoxy(x, y);
-        }
         else if (keystroke == 'i')
         {
-            char* readfile = "./examples/bigmaze.txt";
+            char* readfile = "./examples/smile.txt.txt";
             freeGrid(height, width);
             height = countlines(readfile) - 1;
             width = countrows(readfile);
@@ -265,7 +300,10 @@ int Play(int height, int width)
         }
         else if(keystroke == 'o') //Output file
         {
+
+
             char* writefile = "./examples/maze2.txt";   //Make command line do this
+            
             writeGrid(height, width, writefile);
             clear();
             printGrid(height, width);
