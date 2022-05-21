@@ -2,3 +2,4 @@
 .vscode/
 gitkey.txt
 .gitignore
+test.c

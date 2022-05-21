@@ -25,9 +25,8 @@ wchar_t exitSymbol = 0x23CE;        // ⏎
 #define clear() wprintf(L"\e[1;1H\e[2J")
 
 
-struct Node node;
 //Used to make sure there is no repeats of return or enter charecters
-int replaceGridChars(int placeX, int placeY, wchar_t placeChar, int height, int width, struct Node* ranArray[height]) 
+int replaceGridChars(int placeX, int placeY, wchar_t placeChar, int height, int width) 
 {
     for (int i = 0; i < height; i++)
     {
@@ -76,7 +75,7 @@ const char* changeColours(int colour)
     }
 }
 
-void printGrid(int height, int width,struct Node* ranArray[height])
+void printGrid(int height, int width)
 {
     for (int i = 0; i < height; i++)
     {
@@ -105,7 +104,7 @@ void printGrid(int height, int width,struct Node* ranArray[height])
     }
 }
 
-double mapAdjacent(int height, int width, struct Node* ranArray[height],int startNodeX, int startNodeY, int exitNodeX, int exitNodeY)
+double mapAdjacent(int height, int width,int startNodeX, int startNodeY, int exitNodeX, int exitNodeY)
 {
     int counter = 1;
     int x,y;
@@ -123,7 +122,7 @@ double mapAdjacent(int height, int width, struct Node* ranArray[height],int star
             (ranArray[height - 2][1].visited == false)) 
             || ranArray[exitNodeX][exitNodeY].visited == false)
         {
-            currentCovered = bruteForce(height, width, ranArray, startNodeX, startNodeY, counter, currentCovered);
+            currentCovered = bruteForce(height, width, startNodeX, startNodeY, counter, currentCovered);
             if (currentCovered == pastCovered)
             {
                 return 0;
@@ -131,13 +130,13 @@ double mapAdjacent(int height, int width, struct Node* ranArray[height],int star
             else{pastCovered = currentCovered;}
             counter ++;
             clear();
-            printGrid(height, width, ranArray);
+            printGrid(height, width);
             usleep(150000);
         }
         return 1; 
 }
 
-void traceBack(int height, int width, struct Node* ranArray[height], int exitNodeX, int exitNodeY, int startNodeX, int startNodeY)
+void traceBack(int height, int width, int exitNodeX, int exitNodeY, int startNodeX, int startNodeY)
 {
     int backX = exitNodeX;
     int backY = exitNodeY;
@@ -155,12 +154,13 @@ void traceBack(int height, int width, struct Node* ranArray[height], int exitNod
         backY = tempY;
         usleep(150000);
         clear();
-        printGrid(height, width, ranArray);
+        printGrid(height, width);
     }
 }
 
-void makeGrid(int height, int width, struct Node* ranArray[height])
+void makeGrid(int height, int width)
 {
+    ranArray = (struct Node**)malloc(height * sizeof(struct Node*));
     for(int i = 0; i < height; i++){ranArray[i] = (struct Node*) malloc(width * sizeof(struct Node));}
 
     for (int i = 0; i < height; i++)
@@ -198,7 +198,7 @@ void makeGrid(int height, int width, struct Node* ranArray[height])
     }
 }
 
-void freeGrid(int height, int width, struct Node* ranArray[height])
+void freeGrid(int height, int width)
 {
     for (int i = 0; i < height; i++)
     {
@@ -207,7 +207,7 @@ void freeGrid(int height, int width, struct Node* ranArray[height])
     free(ranArray);
 }
 
-bool checkCondition(int height, int width, struct Node* ranArray[height], wchar_t entryNode, wchar_t exitNode)    //Checks for entry and exit nodes within the program
+bool checkCondition(int height, int width, wchar_t entryNode, wchar_t exitNode)    //Checks for entry and exit nodes within the program
 {
     int check = 0;
     for (int i = 0; i < height; i++)
@@ -230,12 +230,7 @@ bool checkCondition(int height, int width, struct Node* ranArray[height], wchar_
     }
 }
 
-
-
-
-
-
-void importGrid(int height, int width, struct Node* ranArray[height], char* filename)
+void importGrid(int height, int width, char* filename)
 {
     FILE *fp = fopen(filename, "r");
     char buffer[500];
@@ -336,7 +331,7 @@ int countrows(char *filename)
     return elements;
 }
 
-void writeGrid(int height, int width, struct Node* ranArray[height], char*filename)
+void writeGrid(int height, int width, char*filename)
 {
     FILE *fptr = fopen(filename, "w");
     for (int i = 0; i < height; i++)

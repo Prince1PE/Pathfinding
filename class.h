@@ -11,4 +11,5 @@ struct Node
     int parentNode[2];
 };
 
+static struct Node** ranArray;
 #endif
