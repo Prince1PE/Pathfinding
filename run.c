@@ -1,10 +1,8 @@
 #include "Grid.h"
 #include <sys/time.h>
 //TODO
-//Allow program to be run via commands
 //Add in something more complicated
 //Add a timer  
-//Export Map
 
 static struct Node **ranArray;
 
@@ -17,7 +15,7 @@ int Play(int height, int width)
     int y = height;
     height += 2;    //takes into account, the top, bottom, left & right walls
     width += 2;
-
+    srand(time(NULL));
     // struct Node **ranArray;    //Makes an array of nodes
 
     // node.type = upperHalfBlock; //Sets the default node charecter
@@ -149,7 +147,7 @@ int Play(int height, int width)
 
             while ((c = getchar()) != '\n' && c != EOF && strlen(buffer) != 100)
                 {
-                    if (c == 127 && strlen(buffer) != 0)
+                    if (c == 127)
                     {
                         buffer[strlen(buffer) - 1] = '\0';
                         clear();
@@ -164,8 +162,14 @@ int Play(int height, int width)
                 }      
             clear();
             printGrid(height, width);
+            if(strlen(buffer) == 0)
+            {
+                continue;
+            }
+            
             word = strtok(buffer, " ");
             command[0] = word;
+        
 
             while(word != NULL)
             {
@@ -174,16 +178,14 @@ int Play(int height, int width)
                 word = strtok(NULL, " ");
             }
 
-            if(c == 127)
-            {
-                continue;
-            }
+            
 
-            else if(strlen(buffer) == 100)
+            if(strlen(buffer) == 100)
             {
                 wprintf(L"Stop trying to break the program >:( \n");
             }
-            else if (strcmp(command[0], "use") == 0)
+            
+            else if (!strcmp(command[0], "use"))
             {
                 if (strcmp(command[1], "bruteforce") == 0)
                 {
@@ -226,14 +228,16 @@ int Play(int height, int width)
                     wprintf(L"%sUnkown command\n", changeColours(4));
                 }
             }
-            else if (strcmp(command[0], "clear") == 0)
+            
+            else if (!strcmp(command[0], "clear"))
             {
                 makeGrid(height, width);
                 clear();
                 printGrid(height, width);
                 wprintf(L"%s Grid Cleared", changeColours(5));
             }
-            else if (strcmp(command[0], "resize") == 0)
+            
+            else if (!strcmp(command[0], "resize"))
             {
                 int resizeValueX, resizeValueY;
                 resizeValueX = atoi(command[1]);
@@ -254,15 +258,61 @@ int Play(int height, int width)
                 {
                     wprintf(L"%sInvalid input\n", changeColours(4));
                 }
+            }
+            
+            else if (!strcmp(command[0], "export"))
+            {
+                clear();
+                printGrid(height, width);
+                if (command[1] == NULL)
+                {
+                    wprintf(L"Enter a filename\n");
+                }
+                else
+                {
+                    char filename[100];
+                    strcpy(filename, command[1]); //This is safe because command[1] can never exceed 100 charecters
+                    strncat(filename, ".txt", 5);
+                    if(scanDirectory(filename))
+                    {
+                        writeGrid(height, width, filename);
+                        clear();
+                        printGrid(height, width);
+                        wprintf(L"%s File has been saved to: examples/%s", changeColours(4), filename);
+                    }
+                }
+            }
+            
+            else if (!strcmp(command[0], "random"))
+            {
+                freeGrid(height, width);
+                makeGrid(height, width);
+                for (int i = 1; i < height - 1; i++)
+                {
+                    for (int j = 1; j < width - 1; j++)
+                    {
+                        if ((rand() % 3) == 1)
+                        {
+                            ranArray[i][j].type = whiteBlock;
+                            ranArray[i][j].visited = true;
+                            ranArray[i][j].distance = 999;
+                        }
+                        
+                    }
+                }
+
+                clear();
+                printGrid(height, width);
                 
             }
+           
             else
             {
                 clear();
                 printGrid(height, width);
-                wprintf(L"%sUnkown command\n", changeColours(4));
+                wprintf(L"%sUnknown command\n", changeColours(4));
             }
-
+            wprintf(L"\n(%s)\n",buffer);
             free(buffer);
         }
         else if (keystroke == 'e') //Places an entry node
@@ -285,7 +335,7 @@ int Play(int height, int width)
         }
         else if (keystroke == 'i')
         {
-            char* readfile = "./examples/smile.txt.txt";
+            char* readfile = "./examples/h.txt";
             freeGrid(height, width);
             height = countlines(readfile) - 1;
             width = countrows(readfile);
@@ -298,17 +348,9 @@ int Play(int height, int width)
             wprintf(L"%s File has been successfully imorted", changeColours(4));
             gotoxy(x,y);
         }
-        else if(keystroke == 'o') //Output file
-        {
 
 
-            char* writefile = "./examples/maze2.txt";   //Make command line do this
-            
-            writeGrid(height, width, writefile);
-            clear();
-            printGrid(height, width);
-            wprintf(L"%s File has been saved to: %s\n", changeColours(4), writefile);
-        }
+        
         else if (keystroke == 'q') //Quits the program
         {
              while(true)
