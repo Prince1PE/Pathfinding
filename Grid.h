@@ -132,7 +132,7 @@ double mapAdjacent(int height, int width,int startNodeX, int startNodeY, int exi
             counter ++;
             clear();
             printGrid(height, width);
-            usleep(150000);
+            // usleep(100000);
         }
         return 1; 
 }
@@ -153,7 +153,7 @@ void traceBack(int height, int width, int exitNodeX, int exitNodeY, int startNod
         tempY = ranArray[backX][backY].parentNode[1];
         backX = tempX;
         backY = tempY;
-        usleep(150000);
+        // usleep(100000);
         clear();
         printGrid(height, width);
     }
@@ -311,4 +311,3 @@ void writeGrid(int height, int width, char filename[100])
     fclose(fptr);
 
 }
-

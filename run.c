@@ -3,6 +3,8 @@
 //TODO
 //Add in something more complicated
 //Add a timer  
+//Use GotoXy, instead of refreshing screen
+//Fix command line
 
 static struct Node **ranArray;
 
@@ -90,7 +92,8 @@ int Play(int height, int width)
         {
             clear();
             printGrid(height, width);
-            printf("(%i,%i) -> (%i,%i) - %i", valx, valy ,ranArray[valx][valy].parentNode[0], ranArray[valx][valy].parentNode[1], ranArray[valx][valy].distance);
+            wprintf(L"(%i,%i) -> (%i,%i) - %i", valx, valy ,ranArray[valx][valy].parentNode[0], ranArray[valx][valy].parentNode[1], ranArray[valx][valy].distance);
+            wprintf(L"X:%i Y:%i\n", x, y);
             gotoxy(x, y);
         }    
         else if (keystroke == ' ')//Places Block
@@ -120,11 +123,11 @@ int Play(int height, int width)
             if(help)
             {
                 clear();
-                printf("Type space to enter/remove a block\n");
-                printf("Type / to enter your command prompt, simply enter backspace to exit\n");
-                printf("Type q to quit the program\n");
-                printf("Use WASD to move\n\n");
-                printf("\n\n Click h to exit");
+                wprintf(L"Type space to enter/remove a block\n");
+                wprintf(L"Type / to enter your command prompt, simply enter backspace to exit\n");
+                wprintf(L"Type q to quit the program\n");
+                wprintf(L"Use WASD to move\n\n");
+                wprintf(L"\n\n Click h to exit");
                 help = false;
             }
             else
@@ -136,7 +139,8 @@ int Play(int height, int width)
         }        
         else if (keystroke == '/')  //Ignore this, im going to truy and make this work later
         {
-            char *buffer = (char *)malloc(100);
+            char buffer[100];
+            memset(buffer, '\x00', 100);
             char* word;
             int counter = 0;
             char* command[20];
@@ -241,18 +245,19 @@ int Play(int height, int width)
             {
                 int resizeValueX, resizeValueY;
                 resizeValueX = atoi(command[1]);
-                if (resizeValueX)
+                if (resizeValueX && strlen(command[1]) > 0 && resizeValueX < 60)
                 {
                     freeGrid(height, width);
                     resizeValueY = atoi(command[2]);
                     height = resizeValueX + 2;
-                    if(resizeValueY)
+                    if(resizeValueY && strlen(command[2]) > 0 && resizeValueX < 104)
                     {
                         width = resizeValueY + 2;
                     }
                     makeGrid(height, width);
                     clear();
                     printGrid(height, width);
+                    gotoxy(x,y);
                 }
                 else
                 {
@@ -305,15 +310,71 @@ int Play(int height, int width)
                 printGrid(height, width);
                 
             }
-           
+
+            else if (!strcmp(command[0], "import"))
+            {
+                clear();
+                DIR *d = opendir("./examples");
+                struct dirent *dir;
+                if(strlen(command[1]) == 0)
+                {
+                    // if (d)
+                    // {
+                    //     while((dir = readdir(d)) != NULL)
+                    //     {
+                    //         wprintf(L"◉%s\n", dir->d_name);
+                    //     }
+                    // }
+                    // else
+                    // {
+                    //         wprintf(L"File not found\n");
+                    // }
+                    wprintf(L"here");
+                }
+
+                else
+                {
+                    bool found = false;
+                    if (d)
+                    {
+                        while((dir = readdir(d)) != NULL)
+                        {
+                            if (!strcmp(command[1], dir->d_name))
+                            {
+                                freeGrid(height, width);
+                                char readfile[120] = "./examples";
+                                strcat(readfile, command[1]);
+                                height = countlines(readfile) - 1;
+                                width = countrows(readfile);
+                                makeGrid(height, width);
+                                importGrid(height, width, readfile);
+                                x = width - 2;
+                                y = height - 2;
+                                clear();
+                                printGrid(height, width);
+                                wprintf(L"%s File has been successfully imorted", changeColours(4));
+                                gotoxy(x,y);
+                            }
+                            
+                        }
+                    }
+                    else
+                    {
+                            wprintf(L"File not found\n");
+                    }
+                }
+            
+            }
+
             else
             {
                 clear();
                 printGrid(height, width);
                 wprintf(L"%sUnknown command\n", changeColours(4));
             }
-            wprintf(L"\n(%s)\n",buffer);
-            free(buffer);
+           
+            // wprintf(L"\n(%s)\n",buffer);
+            memset(buffer, 0 , 100);
         }
         else if (keystroke == 'e') //Places an entry node
         {
@@ -335,7 +396,7 @@ int Play(int height, int width)
         }
         else if (keystroke == 'i')
         {
-            char* readfile = "./examples/h.txt";
+            char* readfile = "./examples/bigmaze.txt";
             freeGrid(height, width);
             height = countlines(readfile) - 1;
             width = countrows(readfile);
