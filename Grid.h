@@ -25,7 +25,6 @@ wchar_t exitSymbol = 0x23CE;        // ⏎
 #define gotoxy(x,y) wprintf(L"\033[%d;%dH", (y), (x)) //macro to move cursor
 #define clear() wprintf(L"\e[1;1H\e[2J")
 
-
 //Used to make sure there is no repeats of return or enter charecters
 int replaceGridChars(int placeX, int placeY, wchar_t placeChar, int height, int width) 
 {
@@ -84,8 +83,16 @@ void refresh(int height, int width)
         {
             if (ranArray[i][j].dirty == true)
             {
-                gotoxy(i * 2 + 1, j * 2 + 1);
-                wprintf(L"%s%lc", changeColours(ranArray[i][j].colour), ranArray[i][j].type);
+                wprintf(L"\033[%d;%dH", (i + 1), (j * 2));
+                if (ranArray[i][j].type == '_')
+                {
+                    wprintf(L"%s", changeColours(2));
+                }
+                else
+                {
+                    wprintf(L"%s", changeColours(ranArray[i][j].colour));
+                }
+                wprintf(L"%lc", ranArray[i][j].type);
                 ranArray[i][j].dirty = false;
             }
         }
