@@ -8,6 +8,7 @@ struct Node
     int colour;
     int distance;
     bool visited;
+    bool dirty;
     int parentNode[2];
 };
 

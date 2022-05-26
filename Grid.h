@@ -82,10 +82,11 @@ void refresh(int height, int width)
     {
         for (int j = 0; j < width; j++)
         {
-            if (ranArray[i][j].type == '_')
+            if (ranArray[i][j].dirty == true)
             {
-                gotoxy(i * 2, j + 1);
+                gotoxy(i * 2 + 1, j * 2 + 1);
                 wprintf(L"%s%lc", changeColours(ranArray[i][j].colour), ranArray[i][j].type);
+                ranArray[i][j].dirty = false;
             }
         }
     }
@@ -125,6 +126,7 @@ double mapAdjacent(int height, int width,int startNodeX, int startNodeY, int exi
     int counter = 1;
     int x,y;
     clear();
+    printGrid(height, width);
     int valx, valy;
     int currentCovered, pastCovered;
     
@@ -143,7 +145,11 @@ double mapAdjacent(int height, int width,int startNodeX, int startNodeY, int exi
             {
                 return 0;
             }
-            else{pastCovered = currentCovered;}
+            else
+            {
+                pastCovered = currentCovered;
+            }
+            
             counter ++;
             // clear();
             // printGrid(height, width);
@@ -163,7 +169,9 @@ void traceBack(int height, int width, int exitNodeX, int exitNodeY, int startNod
     {
         ranArray[backX][backY].colour = 4;
         ranArray[backX][backY].type = dot;
+        ranArray[backX][backY].dirty = true;
         ranArray[exitNodeX][exitNodeY].type = exitSymbol;
+        ranArray[exitNodeX][exitNodeY].dirty = true;
         ranArray[exitNodeX][exitNodeY].colour = 8;
         tempX = ranArray[backX][backY].parentNode[0];   //Probably inneficient
         tempY = ranArray[backX][backY].parentNode[1];
