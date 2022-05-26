@@ -3,6 +3,7 @@
 void mapSurrounding(int height, int width,int counter, int x, int y, int i, int j)
     {
         ranArray[x][y].visited = true;
+        ranArray[x][y].refreshed = true;
         ranArray[x][y].distance = counter;
         ranArray[x][y].parentNode[0] = i;
         ranArray[x][y].parentNode[1] = j;

@@ -33,18 +33,39 @@ void refresh1(int height, int width)
     }
 }
 
+int listDirectory(char* filename)
+{
+    DIR *d = opendir(filename);
+    struct dirent *dir;
+
+    if (d)
+    {
+        wprintf(L"*------------------------------------*\n");
+        while((dir = readdir(d)) != NULL)
+        {
+            if (strstr(dir->d_name, ".txt"))
+            {
+                wprintf(L"◉  %s\n", dir->d_name);
+            }
+        }
+        wprintf(L"*------------------------------------*\n");
+    }
+    else
+    {
+            wprintf(L"File not found\n");
+            return 1;
+    }
+    closedir(d);
+    return 0;
+}
+
 
 int main()
 {
     setlocale(LC_CTYPE, "");
     int height, width;
     width = height = 50;
-
-	clear();
-	makeGrid(height, width);
-    printGrid(height, width);
-    refresh1(height, width);
-    gotoxy(1,500);
+    listDirectory("./examples");
 	return 0;
 
 }

@@ -82,10 +82,11 @@ void refresh(int height, int width)
     {
         for (int j = 0; j < width; j++)
         {
-            if (ranArray[i][j].type == '_')
+            if (ranArray[i][j].refreshed == true)
             {
-                gotoxy(i * 2, j + 1);
+                gotoxy(i * 2, j * 2 + 1);
                 wprintf(L"%s%lc", changeColours(ranArray[i][j].colour), ranArray[i][j].type);
+                ranArray[i][j].refreshed = false;
             }
         }
     }

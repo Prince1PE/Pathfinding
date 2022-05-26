@@ -84,3 +84,29 @@ bool scanDirectory(char filename[100])
     }
 
 }
+
+int listDirectory(char* filename)
+{
+    DIR *d = opendir(filename);
+    struct dirent *dir;
+
+    if (d)
+    {
+        wprintf(L"*------------------------------------*\n");
+        while((dir = readdir(d)) != NULL)
+        {
+            if (strstr(dir->d_name, ".txt"))
+            {
+                wprintf(L"◉  %s\n", dir->d_name);
+            }
+        }
+        wprintf(L"*------------------------------------*\n");
+    }
+    else
+    {
+            wprintf(L"File not found\n");
+            return 1;
+    }
+    closedir(d);
+    return 0;
+}

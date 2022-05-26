@@ -318,18 +318,9 @@ int Play(int height, int width)
                 struct dirent *dir;
                 if(strlen(command[1]) == 0)
                 {
-                    // if (d)
-                    // {
-                    //     while((dir = readdir(d)) != NULL)
-                    //     {
-                    //         wprintf(L"◉%s\n", dir->d_name);
-                    //     }
-                    // }
-                    // else
-                    // {
-                    //         wprintf(L"File not found\n");
-                    // }
-                    wprintf(L"here");
+                    wprintf(L"Test1\n");
+                    clear();
+                    listDirectory("./examples");
                 }
 
                 else
@@ -449,6 +440,8 @@ int main(int argc, char* argv[])    //Takes command line input
 {
     int x = 10; //Sets default to 50 by 100
     int y = 10;
+
+    
 
     if (argc == 2)  //If the user entered 1 argument
     {
