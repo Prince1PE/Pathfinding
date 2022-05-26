@@ -76,6 +76,21 @@ const char* changeColours(int colour)
     }
 }
 
+void refresh(int height, int width)
+{
+   for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            if (ranArray[i][j].type == '_')
+            {
+                gotoxy(i * 2, j + 1);
+                wprintf(L"%s%lc", changeColours(ranArray[i][j].colour), ranArray[i][j].type);
+            }
+        }
+    }
+}
+
 void printGrid(int height, int width)
 {
     for (int i = 0; i < height; i++)
@@ -130,8 +145,9 @@ double mapAdjacent(int height, int width,int startNodeX, int startNodeY, int exi
             }
             else{pastCovered = currentCovered;}
             counter ++;
-            clear();
-            printGrid(height, width);
+            // clear();
+            // printGrid(height, width);
+            refresh(height, width);
             // usleep(100000);
         }
         return 1; 
@@ -154,8 +170,9 @@ void traceBack(int height, int width, int exitNodeX, int exitNodeY, int startNod
         backX = tempX;
         backY = tempY;
         // usleep(100000);
-        clear();
-        printGrid(height, width);
+        // clear();
+        // printGrid(height, width);
+        refresh(height, width);
     }
 }
 
@@ -311,3 +328,4 @@ void writeGrid(int height, int width, char filename[100])
     fclose(fptr);
 
 }
+
