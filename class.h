@@ -9,7 +9,7 @@ struct Node
     int distance;
     bool visited;
     int parentNode[2];
-    bool refreshed;
+    bool dirty;
 };
 
 static struct Node** ranArray;

@@ -38,6 +38,7 @@ int Play(int height, int width)
     gotoxy(x, y);
     int startNodeX, startNodeY, exitNodeX, exitNodeY;
     int valx, valy;
+    bool visual = true;
 
     while (loop)
     {
@@ -127,7 +128,18 @@ int Play(int height, int width)
                 wprintf(L"Type / to enter your command prompt, simply enter backspace to exit\n");
                 wprintf(L"Type q to quit the program\n");
                 wprintf(L"Use WASD to move\n\n");
-                wprintf(L"\n\n Click h to exit");
+                
+                wprintf(L"The following commands can be accessed using the '/' command\n");
+                wprintf(L"➢ use --This takes the argument of the algorithm you want to run\n");
+                wprintf(L"      -bruteforce --This runs the bruteforce method\n");
+                wprintf(L"➢ clear --This clears the screen\n");
+                wprintf(L"➢ resize --This can take 2 arguments, height and width in order to resize the grid\n");
+                wprintf(L"➢ export --This takes one filename as an argument, don't enter a file extension");
+                wprintf(L"➢ random -- This can take one argument, a value between 1,99 which is used as a percentage for the grid\n");
+                wprintf(L"➢ import -- This can take one argument, a file name to import, to list files, just don't type a file name\n");
+                wprintf(L"➢ visual -- This toggles between speed and visual\n");
+
+                wprintf(L"\n\n Click h to exit this menu");
                 help = false;
             }
             else
@@ -191,6 +203,11 @@ int Play(int height, int width)
             
             else if (!strcmp(command[0], "use"))
             {
+                if(counter > 2)
+                {
+                    wprintf(L"This command only takes 1 argument 'bruteforce {algorithm}'\n");
+                    continue;
+                }
                 if (strcmp(command[1], "bruteforce") == 0)
                 {
                     if(checkCondition(height, width, enterSymbol, exitSymbol))
@@ -198,9 +215,9 @@ int Play(int height, int width)
                             struct timeval start, stop;
                             double time_taken = 0;
                             gettimeofday(&start, NULL);
-                            if(mapAdjacent(height, width, startNodeX, startNodeY, exitNodeX, exitNodeY))
+                            if(mapAdjacent(height, width, startNodeX, startNodeY, exitNodeX, exitNodeY, visual))
                             {
-                                traceBack(height, width, exitNodeX, exitNodeY, startNodeX, startNodeY);
+                                traceBack(height, width, exitNodeX, exitNodeY, startNodeX, startNodeY, visual);
                                 clear();
                                 printGrid(height, width);
                                 gettimeofday(&stop, NULL);
@@ -216,6 +233,8 @@ int Play(int height, int width)
                             }
                                 freeGrid(height, width);
                                 makeGrid(height, width);
+                                // clear();
+                                // printGrid(height, width);
                         }
                     else
                     {
@@ -235,6 +254,11 @@ int Play(int height, int width)
             
             else if (!strcmp(command[0], "clear"))
             {
+                if(counter > 1)
+                {
+                    wprintf(L"This command takes no arguments\n");
+                    sleep(1);
+                }
                 makeGrid(height, width);
                 clear();
                 printGrid(height, width);
@@ -243,60 +267,87 @@ int Play(int height, int width)
             
             else if (!strcmp(command[0], "resize"))
             {
+                if(counter > 3)
+                {
+                    wprintf(L"This command only takes 2 arguments 'resize {height} {width}'");
+                    continue;
+                }
                 int resizeValueX, resizeValueY;
                 resizeValueX = atoi(command[1]);
-                if (resizeValueX && strlen(command[1]) > 0 && resizeValueX < 60)
+                if (resizeValueX && counter > 1 && resizeValueX < 61 && resizeValueX > 9)
                 {
                     freeGrid(height, width);
                     resizeValueY = atoi(command[2]);
                     height = resizeValueX + 2;
-                    if(resizeValueY && strlen(command[2]) > 0 && resizeValueX < 104)
+                    if(resizeValueY && counter > 2 && resizeValueX < 104 && resizeValueY > 9)
                     {
                         width = resizeValueY + 2;
                     }
                     makeGrid(height, width);
                     clear();
                     printGrid(height, width);
-                    gotoxy(x,y);
+                    
                 }
                 else
                 {
                     wprintf(L"%sInvalid input\n", changeColours(4));
                 }
+                x = 4;
+                y = 4;
+                gotoxy(x,y);
             }
             
             else if (!strcmp(command[0], "export"))
             {
+                if(counter != 2)
+                {
+                    wprintf(L"This command takes a filename as a singular argument");
+                    continue;
+                }
                 clear();
                 printGrid(height, width);
-                if (command[1] == NULL)
+                char filename[100];
+                strcpy(filename, command[1]); //This is safe because command[1] can never exceed 100 charecters
+                strncat(filename, ".txt", 5);
+                if(scanDirectory(filename))
                 {
-                    wprintf(L"Enter a filename\n");
-                }
-                else
-                {
-                    char filename[100];
-                    strcpy(filename, command[1]); //This is safe because command[1] can never exceed 100 charecters
-                    strncat(filename, ".txt", 5);
-                    if(scanDirectory(filename))
-                    {
-                        writeGrid(height, width, filename);
-                        clear();
-                        printGrid(height, width);
-                        wprintf(L"%s File has been saved to: examples/%s", changeColours(4), filename);
-                    }
+                    writeGrid(height, width, filename);
+                    clear();
+                    printGrid(height, width);
+                    wprintf(L"%s File has been saved to: examples/%s", changeColours(4), filename);
                 }
             }
             
             else if (!strcmp(command[0], "random"))
             {
+                if (counter > 2)
+                {
+                    wprintf(L"This command only takes 1 argument\n");
+                    continue;
+                }
+                
                 freeGrid(height, width);
                 makeGrid(height, width);
+                int ranValue = 50;
+                int digit;
+                if(counter > 1)
+                {
+                    digit = atoi(command[1]);
+                    if (digit < 1 || digit > 99)
+                    {
+                        wprintf(L"Please enter a percentage between 1 & 99");
+                        continue;
+                    }
+                    else
+                    {
+                        ranValue = digit;
+                    }
+                }
                 for (int i = 1; i < height - 1; i++)
                 {
                     for (int j = 1; j < width - 1; j++)
                     {
-                        if ((rand() % 3) == 1)
+                        if ((rand() % 100) < ranValue)
                         {
                             ranArray[i][j].type = whiteBlock;
                             ranArray[i][j].visited = true;
@@ -313,14 +364,34 @@ int Play(int height, int width)
 
             else if (!strcmp(command[0], "import"))
             {
-                clear();
+                if (counter > 2)
+                {
+                    wprintf(L"This command only takes 1 argument");
+                }
+                
                 DIR *d = opendir("./examples");
                 struct dirent *dir;
-                if(strlen(command[1]) == 0)
+                
+                if(counter == 1)
                 {
-                    wprintf(L"Test1\n");
                     clear();
-                    listDirectory("./examples");
+                    if (d)
+                    {
+                        wprintf(L"Type '/import', followed by one of the following file names\n");
+                        wprintf(L"*-----------------------------------------------------------------*\n");
+                        while((dir = readdir(d)) != NULL)
+                        {
+                            if(strstr(dir->d_name, ".txt"))
+                            {
+                                wprintf(L"◉ %s\n", dir->d_name);
+                            }
+                        }
+                         wprintf(L"*-----------------------------------------------------------------*\n");
+                    }
+                    else
+                    {
+                            wprintf(L"File not found\n");
+                    }
                 }
 
                 else
@@ -333,8 +404,9 @@ int Play(int height, int width)
                             if (!strcmp(command[1], dir->d_name))
                             {
                                 freeGrid(height, width);
-                                char readfile[120] = "./examples";
+                                char readfile[120] = "./examples/";
                                 strcat(readfile, command[1]);
+                                wprintf(L"%s\n", readfile);
                                 height = countlines(readfile) - 1;
                                 width = countrows(readfile);
                                 makeGrid(height, width);
@@ -345,18 +417,41 @@ int Play(int height, int width)
                                 printGrid(height, width);
                                 wprintf(L"%s File has been successfully imorted", changeColours(4));
                                 gotoxy(x,y);
+                                found = true;
                             }
-                            
                         }
                     }
                     else
                     {
                             wprintf(L"File not found\n");
                     }
+                    if (found == false)
+                    {
+                        wprintf(L"Invalid file name\n");
+                    }
+                    
                 }
-            
+                
             }
 
+            else if (!strcmp(command[0], "visual"))
+            {
+                if (counter > 1)
+                {
+                    wprintf(L"This command takes no arguments\n");
+                }
+                visual = !visual;
+                if (visual)
+                {
+                    wprintf(L"%sOptamised for Appearence", changeColours(5));
+                }
+                else
+                {
+                    wprintf(L"%sOptamised for speed", changeColours(5));
+                }
+                
+                
+            }
             else
             {
                 clear();
@@ -385,23 +480,7 @@ int Play(int height, int width)
             printGrid(height, width);
             gotoxy(x, y);
         }
-        else if (keystroke == 'i')
-        {
-            char* readfile = "./examples/bigmaze.txt";
-            freeGrid(height, width);
-            height = countlines(readfile) - 1;
-            width = countrows(readfile);
-            makeGrid(height, width);
-            importGrid(height, width, readfile);
-            x = width - 2;
-            y = height - 2;
-            clear();
-            printGrid(height, width);
-            wprintf(L"%s File has been successfully imorted", changeColours(4));
-            gotoxy(x,y);
-        }
-
-
+        
         
         else if (keystroke == 'q') //Quits the program
         {
@@ -433,6 +512,7 @@ int Play(int height, int width)
         }
     }
     freeGrid(height, width);
+    return 0;
 }
 
 

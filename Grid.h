@@ -82,11 +82,11 @@ void refresh(int height, int width)
     {
         for (int j = 0; j < width; j++)
         {
-            if (ranArray[i][j].refreshed == true)
+            if (ranArray[i][j].dirty == true)
             {
                 gotoxy(i * 2, j * 2 + 1);
                 wprintf(L"%s%lc", changeColours(ranArray[i][j].colour), ranArray[i][j].type);
-                ranArray[i][j].refreshed = false;
+                ranArray[i][j].dirty = false;
             }
         }
     }
@@ -121,7 +121,7 @@ void printGrid(int height, int width)
     }
 }
 
-double mapAdjacent(int height, int width,int startNodeX, int startNodeY, int exitNodeX, int exitNodeY)
+double mapAdjacent(int height, int width,int startNodeX, int startNodeY, int exitNodeX, int exitNodeY, bool visual)
 {
     int counter = 1;
     int x,y;
@@ -146,15 +146,21 @@ double mapAdjacent(int height, int width,int startNodeX, int startNodeY, int exi
             }
             else{pastCovered = currentCovered;}
             counter ++;
-            // clear();
-            // printGrid(height, width);
-            refresh(height, width);
-            // usleep(100000);
+            if(visual)
+            {
+                clear();
+                printGrid(height, width);
+                usleep(100000);
+            }
+            else
+            {
+                refresh(height, width);
+            }
         }
         return 1; 
 }
 
-void traceBack(int height, int width, int exitNodeX, int exitNodeY, int startNodeX, int startNodeY)
+void traceBack(int height, int width, int exitNodeX, int exitNodeY, int startNodeX, int startNodeY, bool visual)
 {
     int backX = exitNodeX;
     int backY = exitNodeY;
@@ -170,10 +176,16 @@ void traceBack(int height, int width, int exitNodeX, int exitNodeY, int startNod
         tempY = ranArray[backX][backY].parentNode[1];
         backX = tempX;
         backY = tempY;
-        // usleep(100000);
-        // clear();
-        // printGrid(height, width);
-        refresh(height, width);
+        if(visual)
+        {
+            usleep(100000);
+            clear();
+            printGrid(height, width);
+        }
+        else
+        {
+            refresh(height, width);
+        }
     }
 }
 
