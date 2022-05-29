@@ -1,5 +1,6 @@
 #include "Grid.h"
 #include <sys/time.h>
+#include <sys/ioctl.h>
 //TODO
 //Add in something more complicated
 //Add a timer  
@@ -7,14 +8,15 @@
 //Fix command line
 
 static struct Node **ranArray;
+int screen_height, screen_width;
 
 int Play(int height, int width)
 {
     bool help = true;   //Used for the help comand
     bool loop = true;   //Used to keep looping through the code
     char quit;          //Used for the quit command
-    int x = width;
-    int y = height;
+    int x = 4;
+    int y = 4;
     height += 2;    //takes into account, the top, bottom, left & right walls
     width += 2;
     srand(time(NULL));
@@ -45,7 +47,7 @@ int Play(int height, int width)
         valx = y - 1; //Dont question it
         valy = x / 2;
         keystroke = getchar();
-        if (keystroke == 'w')//Move up
+        if (keystroke == 'w' || keystroke == 'W')//Move up
         {
             if (y == 2)
             {
@@ -56,7 +58,7 @@ int Play(int height, int width)
             y --;
             gotoxy(x,y);
         }
-        else if (keystroke == 'a')//Move left
+        else if (keystroke == 'a' || keystroke == 'A')//Move left
         {
             if (x == 2)
             {
@@ -67,7 +69,7 @@ int Play(int height, int width)
             x -= 2;
             gotoxy(x,y);
         }
-        else if (keystroke == 's')//Move Down
+        else if (keystroke == 's' || keystroke == 'S')//Move Down
         {
             if (y == height - 1)
             {
@@ -78,7 +80,7 @@ int Play(int height, int width)
             y ++;
             gotoxy(x,y);
         }
-        else if (keystroke == 'd')//Move Right
+        else if (keystroke == 'd' || keystroke == 'D')//Move Right
         {
             if (x >= (width * 2) - 4)
             {
@@ -89,7 +91,7 @@ int Play(int height, int width)
             x += 2;
             gotoxy(x,y);
         }
-        else if (keystroke == 'g')  //Troubleshooting key
+        else if (keystroke == 'g' || keystroke == 'G')  //Troubleshooting key
         {
             clear();
             printGrid(height, width);
@@ -119,7 +121,7 @@ int Play(int height, int width)
             printGrid(height, width);
             gotoxy(x, y);
         }    
-        else if (keystroke == 'h')//Shows help menu
+        else if (keystroke == 'h' || keystroke == 'H')//Shows help menu
         {
             if(help)
             {
@@ -170,6 +172,12 @@ int Play(int height, int width)
                         printGrid(height, width);
                         wprintf(L"\n\n/%s", buffer);
                     }
+                    else if(c == 27)
+                    {
+                        clear();
+                        printGrid(height, width);
+                        break;
+                    }
                     else
                     {
                         wprintf(L"%c", c);
@@ -178,7 +186,7 @@ int Play(int height, int width)
                 }      
             clear();
             printGrid(height, width);
-            if(strlen(buffer) == 0)
+            if(strlen(buffer) == 0 || c == 27)
             {
                 continue;
             }
@@ -193,8 +201,6 @@ int Play(int height, int width)
                 counter++;
                 word = strtok(NULL, " ");
             }
-
-            
 
             if(strlen(buffer) == 100)
             {
@@ -452,6 +458,7 @@ int Play(int height, int width)
                 
                 
             }
+            
             else
             {
                 clear();
@@ -462,7 +469,7 @@ int Play(int height, int width)
             // wprintf(L"\n(%s)\n",buffer);
             memset(buffer, 0 , 100);
         }
-        else if (keystroke == 'e') //Places an entry node
+        else if (keystroke == 'e' || keystroke == 'E') //Places an entry node
         {
             replaceGridChars(valx, valy, enterSymbol, height, width);
             startNodeX = valx;
@@ -471,7 +478,7 @@ int Play(int height, int width)
             printGrid(height, width);
             gotoxy(x, y);
         }
-        else if (keystroke == 'r')  //Places a return node
+        else if (keystroke == 'r' || keystroke == 'R')  //Places a return node
         {
             replaceGridChars(valx, valy, exitSymbol, height, width);
             exitNodeX = valx;
@@ -479,10 +486,8 @@ int Play(int height, int width)
             clear();
             printGrid(height, width);
             gotoxy(x, y);
-        }
-        
-        
-        else if (keystroke == 'q') //Quits the program
+        }        
+        else if (keystroke == 'q' || keystroke == 'Q') //Quits the program
         {
              while(true)
             {
@@ -495,7 +500,7 @@ int Play(int height, int width)
                     system("clear");
                     tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
                     system("wmctrl -F -r :ACTIVE: -b remove,fullscreen");//Gets rid of the fullscreen
-                    system("wmctrl -r :ACTIVE: -b toggle,maximized_vert,maximized_horz");//Maxamise to make sure the pattern is kept
+                    // system("wmctrl -r :ACTIVE: -b toggle,maximized_vert,maximized_horz");//Maxamise to make sure the pattern is kept
                     return 0;
                 }
                 else if (quit == 'n' || quit == 'N')
@@ -520,35 +525,66 @@ int main(int argc, char* argv[])    //Takes command line input
 {
     int x = 10; //Sets default to 50 by 100
     int y = 10;
+    system("wmctrl -F -r :ACTIVE: -b add,fullscreen");// Sets the terminal to fullscreen
+    usleep(50000);
+    struct winsize window;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &window);
+    screen_height = window.ws_row - 10;
+    screen_width = (window.ws_col / 2) - 3;
 
-    
 
     if (argc == 2)  //If the user entered 1 argument
     {
-        x = atoi(argv[1]);  //convert it to an integer
+        if(!strcmp(argv[1], "MAX_HEIGHT"))
+        {
+            x = screen_height;
+        }
+        else
+        {
+            x = atoi(argv[1]);  //convert it to an integer
+        }
     }
 
 
-    else if( argc == 3 ) {
-        x = atoi(argv[1]);
-        y = atoi(argv[2]);
+    else if( argc == 3 ) 
+    {
+        if(!strcmp(argv[1], "MAX_HEIGHT"))
+        {
+            x = screen_height;
+        }
+        else
+        {
+            x = atoi(argv[1]);  //convert it to an integer
+        }
+
+        if(!strcmp(argv[2], "MAX_WIDTH"))
+        {
+            y = screen_width;
+        }
+        else
+        {
+            y = atoi(argv[2]);  //convert it to an integer
+        }
     }
     else if( argc > 3 ) {   
         printf("Too many arguments supplied.\n");
+        system("wmctrl -F -r :ACTIVE: -b remove,fullscreen");//Gets rid of the fullscreen
         return -1;
     }
 
     if (x < 5 || y < 5) //Makes sure there values entered are higher than 5
-    {
+    {                   //This should also capture other invalid inputs
         printf("You need to put values higher than 5\n");
+        system("wmctrl -F -r :ACTIVE: -b remove,fullscreen");//Gets rid of the fullscreen
         return -1;
     }
-    else if(x > 60 || y > 104)  //Stops you from enterring too high of a value
+    else if(x > screen_height || y > screen_width)  //Stops you from enterring too high of a value
     {
-        printf("The values you have enterred are too high\n");
+        printf("The values you have enterred are too high, %i, %i\n", screen_height, screen_width);
+        system("wmctrl -F -r :ACTIVE: -b remove,fullscreen");//Gets rid of the fullscreen        
         return -1;
     }
-    system("wmctrl -F -r :ACTIVE: -b add,fullscreen");// Sets the terminal to fullscreen
+    // system("wmctrl -F -r :ACTIVE: -b add,fullscreen");// Sets the terminal to fullscreen
     Play(x, y);
     return 0;
 }
