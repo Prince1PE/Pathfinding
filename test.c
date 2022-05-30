@@ -9,20 +9,41 @@
 #include <stdbool.h>
 #include <sys/ioctl.h>
 
-#define clear() wprintf(L"\e[1;1H\e[2J")
-#define gotoxy(x,y) wprintf(L"\033[%d;%dH", (y), (x)) //macro to move cursor
+// #define clear() wprintf(L"\e[1;1H\e[2J")
+// #define gotoxy(x,y) wprintf(L"\033[%d;%dH", (y), (x)) //macro to move cursor
+#define mouse() printf("\e[?1003h\e[?1015h\e[?1006h", (mousePos))
 
 
 int main()
 {
-    system("wmctrl -F -r :ACTIVE: -b add,fullscreen");// Sets the terminal to fullscreen
-    sleep(2);
-    struct winsize w;
-    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 
-    printf ("lines %d\n", w.ws_row);
-    printf ("columns %d\n", w.ws_col);
-    system("wmctrl -F -r :ACTIVE: -b remove,fullscreen");//Gets rid of the fullscreen
+    static struct termios oldt, newt;
+    tcgetattr( STDIN_FILENO, &oldt); //storing terminal settings in oldt
+    newt = oldt; //copying oldt to newt
+    newt.c_lflag &= ~(ICANON | ECHO); //Turning off canoninal input bit and echo bit
+    tcsetattr( STDIN_FILENO, TCSANOW, &newt);
+
+    char* mousePos;
+    int pid = fork();
+    if (pid == 0)
+    {
+        mouse();
+        while (fread(mousePos, 25, 999, stdin))
+        {
+            if (mouse )
+            {
+                /* code */
+            }
+            
+        }
+        
+        
+    }
+    else
+    {
+        sleep(5);
+        printf("\e[?1000l");
+    }
     return 0;  // make sure your main returns int
 
 }

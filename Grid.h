@@ -121,7 +121,7 @@ void printGrid(int height, int width)
     }
 }
 
-double mapAdjacent(int height, int width,int startNodeX, int startNodeY, int exitNodeX, int exitNodeY, bool visual)
+bool mapAdjacent(int height, int width,int startNodeX, int startNodeY, int exitNodeX, int exitNodeY, bool visual)
 {
     int counter = 1;
     int x,y;

@@ -280,12 +280,12 @@ int Play(int height, int width)
                 }
                 int resizeValueX, resizeValueY;
                 resizeValueX = atoi(command[1]);
-                if (resizeValueX && counter > 1 && resizeValueX < 61 && resizeValueX > 9)
+                if (resizeValueX && counter > 1 && resizeValueX < screen_height && resizeValueX > 9)
                 {
                     freeGrid(height, width);
                     resizeValueY = atoi(command[2]);
                     height = resizeValueX + 2;
-                    if(resizeValueY && counter > 2 && resizeValueX < 104 && resizeValueY > 9)
+                    if(resizeValueY && counter > 2 && resizeValueX < screen_width && resizeValueY > 9)
                     {
                         width = resizeValueY + 2;
                     }
@@ -296,7 +296,7 @@ int Play(int height, int width)
                 }
                 else
                 {
-                    wprintf(L"%sInvalid input\n", changeColours(4));
+                    wprintf(L"%sInvalid input\nYou're display will allow a max height of %i and max width of %i", changeColours(4), screen_height - 1, screen_width - 1);
                 }
                 x = 4;
                 y = 4;
