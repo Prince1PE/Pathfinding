@@ -12,11 +12,11 @@ void mapSurrounding(int height, int width,int counter, int x, int y, int i, int 
 int bruteForce(int height, int width,int startNodeX, int startNodeY, int counter, int checkCount)  
 {
     int x, y, valx, valy;
+    ranArray[startNodeX][startNodeY].colour = 8;
     for (int i = 1; i < height - 1; i++)
     {
         for (int j = 1; j < width - 1; j++)
         {
-            ranArray[startNodeX][startNodeY].colour = 8;
             if (ranArray[i][j].distance == counter - 1)
             {
                 

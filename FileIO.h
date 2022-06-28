@@ -2,6 +2,7 @@
 #include <dirent.h>
 #include <string.h>
 #include <wchar.h>
+#include <stdbool.h>
 
 int countlines(char *filename)
 {
@@ -109,4 +110,25 @@ int listDirectory(char* filename)
     }
     closedir(d);
     return 0;
+}
+
+int secCheck(char* filename)
+{
+    FILE *fp = fopen(filename, "r");
+    if(fp != NULL)
+    {
+        fseek(fp, 0, SEEK_END);
+        int size = ftell(fp);
+        if(size == 0)
+        {
+            return 1;
+        }
+    }
+    else
+    {
+        return 1;
+    }
+    return 0;
+
+    
 }

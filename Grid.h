@@ -131,7 +131,6 @@ bool mapAdjacent(int height, int width,int startNodeX, int startNodeY, int exitN
     
     ranArray[startNodeX][startNodeY].visited = true;
     ranArray[startNodeX][startNodeY].distance = 0;
-    
         while((
             (ranArray[1][1].visited == false) && 
             (ranArray[height - 2][width - 2].visited == false) && 

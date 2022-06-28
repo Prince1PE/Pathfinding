@@ -7,7 +7,7 @@
 //Use GotoXy, instead of refreshing screen
 //Fix command line
 
-static struct Node **ranArray;
+static struct Node **ranArray;  //https://www.geeksforgeeks.org/dynamically-allocate-2d-array-c/amp/ --Makes an array of nodes
 int screen_height, screen_width;
 
 int Play(int height, int width)
@@ -20,14 +20,12 @@ int Play(int height, int width)
     height += 2;    //takes into account, the top, bottom, left & right walls
     width += 2;
     srand(time(NULL));
-    // struct Node **ranArray;    //Makes an array of nodes
 
-    // node.type = upperHalfBlock; //Sets the default node charecter
     int colour = 8;             //Sets the default colour to white
     setlocale(LC_CTYPE, "");    //Allows you to enter unicode charecters
 
     int keystroke;
-    static struct termios oldt, newt;
+    static struct termios oldt, newt;   // Initialises old and new terminal settings
     tcgetattr( STDIN_FILENO, &oldt); //storing terminal settings in oldt
     newt = oldt; //copying oldt to newt
     newt.c_lflag &= ~(ICANON | ECHO); //Turning off canoninal input bit and echo bit
@@ -54,7 +52,6 @@ int Play(int height, int width)
                 y ++;
                 gotoxy(x,y);
             }
-           
             y --;
             gotoxy(x,y);
         }
@@ -65,7 +62,6 @@ int Play(int height, int width)
                 x +=2;
                 gotoxy(x,y);
             }
-           
             x -= 2;
             gotoxy(x,y);
         }
@@ -151,17 +147,17 @@ int Play(int height, int width)
                 printGrid(height, width);
             }
         }        
-        else if (keystroke == '/')  //Ignore this, im going to truy and make this work later
+        else if (keystroke == '/')  
         {
             char buffer[100];
-            memset(buffer, '\x00', 100);
-            char* word;
-            int counter = 0;
-            char* command[20];
+            memset(buffer, '\x00', 100);    //Fills the buffer with NULL charecters
+            char* word;                     // This would be each individual word
+            int counter = 0;                //This is the amount of words enterred by the suer
+            char* command[20];              //This is the array of words splited by spaces
             clear();
             printGrid(height, width);
             wprintf(L"\n\n/");
-            char c;
+            char c;                         //Charecters enterred by the user
 
             while ((c = getchar()) != '\n' && c != EOF && strlen(buffer) != 100)
                 {
@@ -190,6 +186,12 @@ int Play(int height, int width)
             {
                 continue;
             }
+
+            if(strlen(buffer) == 100)
+            {
+                wprintf(L"Stop trying to break the program >:( \n");
+                memset(buffer, 0 , 100);
+            }
             
             word = strtok(buffer, " ");
             command[0] = word;
@@ -202,19 +204,16 @@ int Play(int height, int width)
                 word = strtok(NULL, " ");
             }
 
-            if(strlen(buffer) == 100)
-            {
-                wprintf(L"Stop trying to break the program >:( \n");
-            }
             
-            else if (!strcmp(command[0], "use"))
+            
+            if (!strcmp(command[0], "use"))
             {
                 if(counter > 2)
                 {
                     wprintf(L"This command only takes 1 argument 'bruteforce {algorithm}'\n");
                     continue;
                 }
-                if (strcmp(command[1], "bruteforce") == 0)
+                if (!strcmp(command[1], "bruteforce"))
                 {
                     if(checkCondition(height, width, enterSymbol, exitSymbol))
                         {
@@ -239,8 +238,6 @@ int Play(int height, int width)
                             }
                                 freeGrid(height, width);
                                 makeGrid(height, width);
-                                // clear();
-                                // printGrid(height, width);
                         }
                     else
                     {
@@ -250,6 +247,8 @@ int Play(int height, int width)
                     }
                     gotoxy(x, y);
                     }
+                
+
                 else
                 {
                     clear();
@@ -280,12 +279,12 @@ int Play(int height, int width)
                 }
                 int resizeValueX, resizeValueY;
                 resizeValueX = atoi(command[1]);
-                if (resizeValueX && counter > 1 && resizeValueX < screen_height && resizeValueX > 9)
+                if (counter > 1 && resizeValueX < screen_height && resizeValueX > 9)
                 {
                     freeGrid(height, width);
                     resizeValueY = atoi(command[2]);
                     height = resizeValueX + 2;
-                    if(resizeValueY && counter > 2 && resizeValueX < screen_width && resizeValueY > 9)
+                    if(counter > 2 && resizeValueY < screen_width && resizeValueY > 9)
                     {
                         width = resizeValueY + 2;
                     }
@@ -296,7 +295,7 @@ int Play(int height, int width)
                 }
                 else
                 {
-                    wprintf(L"%sInvalid input\nYou're display will allow a max height of %i and max width of %i", changeColours(4), screen_height - 1, screen_width - 1);
+                    wprintf(L"%sInvalid input\nYou're display will allow a max height of %i and max width of %i\nMinimum input is 10 * 10", changeColours(4), screen_height - 1, screen_width - 1);
                 }
                 x = 4;
                 y = 4;
@@ -469,6 +468,16 @@ int Play(int height, int width)
             // wprintf(L"\n(%s)\n",buffer);
             memset(buffer, 0 , 100);
         }
+        
+        else if (keystroke == 'm')
+        {
+            continue;
+            // queue *q;
+            // q = malloc(sizeof(queue));
+            // initialize(q);
+            // breadthFirstSearch(height, width, startNodeX, startNodeY, 1);
+        }
+
         else if (keystroke == 'e' || keystroke == 'E') //Places an entry node
         {
             replaceGridChars(valx, valy, enterSymbol, height, width);
