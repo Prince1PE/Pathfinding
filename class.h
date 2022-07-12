@@ -12,11 +12,11 @@ int stackEmpty(int stackSize, int stack[stackSize][2], int *top)
 
 void push(int elementX, int elementY, int stackSize ,int stack[stackSize][2], int *top)
 {
-    if(*top == -1)
+    if(*top == -1)  
     {
     stack[stackSize - 1][0] = elementX;
     stack[stackSize - 1][1] = elementY;
-    *top = stackSize - 1;
+    *top = stackSize - 1;   //If the stack is empty, set it to 1 - the stacksize, because the stack grows down
     }
     else if(*top == 0)//Stack is full
     {
@@ -32,19 +32,17 @@ void push(int elementX, int elementY, int stackSize ,int stack[stackSize][2], in
 
 void pop(int stackSize,int stack[stackSize][2], int *top)
 {
-    if(*top == -1)
-    {
+    if(*top == -1)//Stops user from popping from the stack if its empty
+    {             //This should never happen, because we always double check if the stack is empty before popping from it
     printf("ERROR: The stack is empty. \n");
     }
+    
     else{
-    // printf("Element popped: %i, %i \n", stack[(*top)][0], stack[(*top)][1]);
-    // If the element popped was the last element in the stack
-    // then set top to -1 to show that the stack is empty
-    if((*top) == stackSize - 1){
-        (*top) = -1;
+    if((*top) == stackSize - 1){//If the element popped was the last in the stack
+        (*top) = -1;            //Set top to -1 to show the stack is empty
     }
     else{
-        (*top)++;
+        (*top)++;               //Otherwise, increment top
     }
     }
 }

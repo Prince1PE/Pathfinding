@@ -1,11 +1,14 @@
 #include "Grid.h"
 #include <sys/time.h>
 #include <sys/ioctl.h>
+
 //TODO
-//Add in something more complicated
-//Add a timer  
-//Use GotoXy, instead of refreshing screen
-//Fix command line
+//Add other maze generation algorithms
+//Add other pathfinding algorithms
+//Find a better way of counting lines in a file
+//Check to see if imported files are suitable
+//Astar not always choosing the most optimal path
+//Add a watermark or something
 
 static struct Node **ranArray;  //https://www.geeksforgeeks.org/dynamically-allocate-2d-array-c/amp/ --Makes an array of nodes
 int screen_height, screen_width;
@@ -89,6 +92,7 @@ int Play(int height, int width)
         }
         else if (keystroke == 'g' || keystroke == 'G')  //Troubleshooting key
         {
+            continue;
             clear();
             printGrid(height, width);
             wprintf(L"(%i,%i) -> (%i,%i) - %i", valx, valy ,ranArray[valx][valy].parentNode[0], ranArray[valx][valy].parentNode[1], ranArray[valx][valy].distance);
@@ -136,6 +140,8 @@ int Play(int height, int width)
                 wprintf(L"➢ random -- This can take one argument, a value between 1,99 which is used as a percentage for the grid\n");
                 wprintf(L"➢ import -- This can take one argument, a file name to import, to list files, just don't type a file name\n");
                 wprintf(L"➢ visual -- This toggles between speed and visual\n");
+                wprintf(L"➢ Generate -- This allows you to generate a map\n");
+                wprintf(L"      -bfs --Use Breath First Search in order to make a map\n");
 
                 wprintf(L"\n\n Click h to exit this menu");
                 help = false;
@@ -149,7 +155,7 @@ int Play(int height, int width)
         }        
         else if (keystroke == '/')  
         {
-            char buffer[100];
+            char buffer[120];
             memset(buffer, '\x00', 100);    //Fills the buffer with NULL charecters
             char* word;                     // This would be each individual word
             int counter = 0;                //This is the amount of words enterred by the suer
@@ -184,6 +190,7 @@ int Play(int height, int width)
             printGrid(height, width);
             if(strlen(buffer) == 0 || c == 27)
             {
+                gotoxy(x,y);
                 continue;
             }
 
@@ -191,6 +198,7 @@ int Play(int height, int width)
             {
                 wprintf(L"Stop trying to break the program >:( \n");
                 memset(buffer, 0 , 100);
+                continue;
             }
             
             word = strtok(buffer, " ");
@@ -236,8 +244,10 @@ int Play(int height, int width)
                                 printGrid(height, width);
                                 wprintf(L"%s PATH NOT FOUND", changeColours(2));
                             }
-                                freeGrid(height, width);
-                                makeGrid(height, width);
+                                // freeGrid(height, width);
+                                // makeGrid(height, width);
+                                getchar();
+                                resetGrid(height, width);
                         }
                     else
                     {
@@ -248,7 +258,22 @@ int Play(int height, int width)
                     gotoxy(x, y);
                     }
                 
-
+                else if(!strcmp(command[1], "astar"))
+                {
+                    if(Astar(startNodeX, startNodeY, exitNodeX, exitNodeY, height, width, visual))
+                    {
+                        clear();
+                        printGrid(height, width);
+                        wprintf(L"Path Not found\n");
+                    }
+                    else
+                    {
+                        traceBack(height, width, exitNodeX, exitNodeY, startNodeX, startNodeY, 1);
+                        wprintf(L"Path Found!\n");
+                    }
+                    getchar();
+                    resetGrid(height, width);
+                }
                 else
                 {
                     clear();
@@ -413,7 +438,7 @@ int Play(int height, int width)
                                 strcat(readfile, command[1]);
                                 wprintf(L"%s\n", readfile);
                                 height = countlines(readfile) - 1;
-                                width = countrows(readfile);
+                                width = countColumns(readfile);
                                 makeGrid(height, width);
                                 importGrid(height, width, readfile);
                                 x = width - 2;
@@ -454,8 +479,19 @@ int Play(int height, int width)
                 {
                     wprintf(L"%sOptamised for speed", changeColours(5));
                 }
-                
-                
+            }
+            
+            else if (!strcmp(command[0], "generate"))
+            {
+                if (!strcmp(command[1], "bfs"))
+                {
+                    clear();
+                    bfsFunc(height, width, visual);
+                }
+                else
+                {
+                    wprintf(L"That Algorithm isn't found, try typing bfs\n");
+                }
             }
             
             else
@@ -466,6 +502,7 @@ int Play(int height, int width)
             }
            
             // wprintf(L"\n(%s)\n",buffer);
+            gotoxy(x,y);
             memset(buffer, 0 , 100);
         }
         
@@ -477,7 +514,6 @@ int Play(int height, int width)
             // initialize(q);
             // breadthFirstSearch(height, width, startNodeX, startNodeY, 1);
         }
-
         else if (keystroke == 'e' || keystroke == 'E') //Places an entry node
         {
             replaceGridChars(valx, valy, enterSymbol, height, width);
@@ -509,7 +545,7 @@ int Play(int height, int width)
                     system("clear");
                     tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
                     system("wmctrl -F -r :ACTIVE: -b remove,fullscreen");//Gets rid of the fullscreen
-                    // system("wmctrl -r :ACTIVE: -b toggle,maximized_vert,maximized_horz");//Maxamise to make sure the pattern is kept
+                    freeGrid(height, width);
                     return 0;
                 }
                 else if (quit == 'n' || quit == 'N')
@@ -529,10 +565,9 @@ int Play(int height, int width)
     return 0;
 }
 
-
 int main(int argc, char* argv[])    //Takes command line input
 {
-    int x = 10; //Sets default to 50 by 100
+    int x = 10; //Sets default values
     int y = 10;
     system("wmctrl -F -r :ACTIVE: -b add,fullscreen");// Sets the terminal to fullscreen
     usleep(50000);

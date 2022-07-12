@@ -1,3 +1,7 @@
+#ifndef GRID
+#define GRID
+
+
 #include <stdio.h>
 #include <string.h>
 #include <wchar.h>
@@ -7,9 +11,12 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdbool.h>
+
 #include "bruteforce.h"
 #include "class.h"
 #include "FileIO.h"
+#include "bfs.h"
+#include "astar.h"
 
 //Defining a bunch of unicode Charecters
 wchar_t upperHalfBlock = 0x2580;    // ▀
@@ -131,12 +138,7 @@ bool mapAdjacent(int height, int width,int startNodeX, int startNodeY, int exitN
     
     ranArray[startNodeX][startNodeY].visited = true;
     ranArray[startNodeX][startNodeY].distance = 0;
-        while((
-            (ranArray[1][1].visited == false) && 
-            (ranArray[height - 2][width - 2].visited == false) && 
-            (ranArray[1][width - 2].visited == false) && 
-            (ranArray[height - 2][1].visited == false)) 
-            || ranArray[exitNodeX][exitNodeY].visited == false)
+        while(ranArray[exitNodeX][exitNodeY].visited == false)
         {
             currentCovered = bruteForce(height, width, startNodeX, startNodeY, counter, currentCovered);
             if (currentCovered == pastCovered)
@@ -165,7 +167,7 @@ void traceBack(int height, int width, int exitNodeX, int exitNodeY, int startNod
     int backY = exitNodeY;
     int tempX, tempY;
 
-    while(ranArray[backX][backY].distance != 0)
+    while(ranArray[backX][backY].type != enterSymbol)
     {
         ranArray[backX][backY].colour = 4;
         ranArray[backX][backY].type = dot;
@@ -341,3 +343,61 @@ void writeGrid(int height, int width, char filename[100])
 
 }
 
+void resetGrid(int height, int width)
+{
+    for (int i = 1; i < height - 1; i++)
+    {
+        for (int j = 1; j < width - 1; j++)
+        {
+            if (ranArray[i][j].type == '_' || ranArray[i][j].type == dot)
+            {
+                ranArray[i][j].type = '_';
+                ranArray[i][j].visited = false;
+                ranArray[i][j].distance = -1;
+                ranArray[i][j].colour = 8;
+            }
+            else if(ranArray[i][j].type == exitSymbol)
+            {
+                ranArray[i][j].visited = false;
+                ranArray[i][j].distance = -1;
+                
+            }
+        }
+    }
+    
+    clear();
+    printGrid(height, width);
+}
+
+int bfsFunc(int height, int width, bool visual)
+{
+    int stackSize = height * width;
+    int stack[stackSize][2];
+    draw(height, width, stackSize, stack);
+    while(!stackEmpty(stackSize, stack, &top))
+    {
+        if(mapNeighbours(height, width, stackSize, stack))
+        {
+            makePath(stackSize, stack);
+        }
+        else
+        {
+            ranArray[ranArray[stack[top][0]][stack[top][1]].parentNode[0]]
+            [ranArray[stack[top][0]][stack[top][1]].parentNode[1]].type = '_';
+            pop(stackSize, stack, &top);
+        }
+        if(visual)
+        {
+        usleep(90000);
+        clear();
+        printGrid(height, width);
+        }
+    }
+    clear();
+    printGrid(height, width);
+    resetGrid(height, width);
+
+    return 0;
+}
+
+#endif

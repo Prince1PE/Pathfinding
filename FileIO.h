@@ -5,8 +5,7 @@
 #include <stdbool.h>
 
 int countlines(char *filename)
-{
-  // count the number of lines in the file called filename                                    
+{                                
   FILE *fp = fopen(filename,"r");
   int ch=0;
   int lines=0;
@@ -25,11 +24,12 @@ int countlines(char *filename)
             lines++;
         }
     }
+
   fclose(fp);
   return lines;
 }
 
-int countrows(char *filename)
+int countColumns(char *filename)
 {
     FILE *fp = fopen(filename,"r");
     char buffer[500];
@@ -112,23 +112,23 @@ int listDirectory(char* filename)
     return 0;
 }
 
-int secCheck(char* filename)
-{
-    FILE *fp = fopen(filename, "r");
-    if(fp != NULL)
-    {
-        fseek(fp, 0, SEEK_END);
-        int size = ftell(fp);
-        if(size == 0)
-        {
-            return 1;
-        }
-    }
-    else
-    {
-        return 1;
-    }
-    return 0;
+// int secCheck(char* filename)
+// {
+//     FILE *fp = fopen(filename, "r");
+//     if(fp != NULL)
+//     {
+//         fseek(fp, 0, SEEK_END);
+//         int size = ftell(fp);
+//         if(size == 0)
+//         {
+//             return 1;
+//         }
+//     }
+//     else
+//     {
+//         return 1;
+//     }
+//     return 0;
 
     
-}
+// }

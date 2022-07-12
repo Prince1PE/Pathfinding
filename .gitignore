@@ -4,3 +4,6 @@ gitkey.txt
 test.c
 mouse.php
 tmp.log
+./wip/
+./__pycache__
+
