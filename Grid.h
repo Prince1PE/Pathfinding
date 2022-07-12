@@ -12,11 +12,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "bruteforce.h"
-#include "class.h"
+#include "Algorithms/bruteforce.h"
+#include "Algorithms/astar.h"
+#include "classes/node.h"
 #include "FileIO.h"
 #include "bfs.h"
-#include "astar.h"
 
 //Defining a bunch of unicode Charecters
 wchar_t upperHalfBlock = 0x2580;    // ▀
@@ -25,7 +25,7 @@ wchar_t rightHalfBlock = 0x2590;    // ▐
 wchar_t leftHalfBlock = 0x258C;     // ▌
 wchar_t lowerHalfBlock = 0x2584;    // ▄
 wchar_t underscore = '_';
-wchar_t whiteBlock = 0x2588;        // ⊞
+wchar_t whiteBlock = 0x2586;        // ⊞
 wchar_t enterSymbol = 0x2386;       // ⎆
 wchar_t exitSymbol = 0x23CE;        // ⏎
 
@@ -369,4 +369,17 @@ int bfsFunc(int height, int width, bool visual)
     return 0;
 }
 
+void printTime(double timeTaken)
+{
+    if (timeTaken < 1)
+    {
+        wprintf(L"This took %g miliseconds\n", timeTaken * 1000);
+    }
+    else
+    {
+        wprintf(L"This took %g seconds\n", timeTaken);
+    }
+    
+}
 #endif
+

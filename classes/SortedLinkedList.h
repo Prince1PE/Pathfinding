@@ -81,26 +81,3 @@ void pop_sll(OrderedList **linkp)
 static OrderedList *root = 0;
 OrderedList **p2r = &root;
 
-
-// int main()
-// {
-//     OrderedList *root = 0;         /* root is NULL */
-//     OrderedList **p2r = &root;     /* pointer-to-root */
-//     int value;
-//     int op;
-
-//     insert_sll(p2r, 2);
-//     insert_sll(p2r, 4);
-//     insert_sll(p2r, 42);
-//     OrderedList *current = *p2r;
-//     printf("First Element: %d\n", current->distanceToExit);
-//     pop_sll(p2r);
-//     current = *p2r;
-//     printf("First Element: %d\n", current->distanceToExit);
-//     insert_sll(p2r, 1);
-//     current = *p2r;
-//     printf("First Element: %d\n", current->distanceToExit);
-    
-
-//     return 0;
-// }

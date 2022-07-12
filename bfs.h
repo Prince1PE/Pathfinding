@@ -9,7 +9,8 @@
 #include <stdbool.h>
 
 #include "Grid.h"
-#include "class.h"
+#include "classes/stack.h"
+#include "classes/node.h"
 
 static int top = -1;    
 

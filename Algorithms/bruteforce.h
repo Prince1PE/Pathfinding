@@ -1,4 +1,4 @@
-#include "class.h"
+#include "../classes/node.h"
 
 #define clear() wprintf(L"\e[1;1H\e[2J")
 

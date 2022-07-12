@@ -2,9 +2,9 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "Grid.h"
-#include "class.h"
-#include "SortedLinkedList.h"
+#include "../Grid.h"
+#include "../classes/node.h"
+#include "../classes/SortedLinkedList.h"
 
 #define clear() wprintf(L"\e[1;1H\e[2J")
 
@@ -67,13 +67,14 @@ int Astar(int EntryNodeX, int EntryNodeY, int ExitNodeX, int ExitNodeY, int heig
             setNode(nodeCost(valX, valY, ExitNodeX, ExitNodeY, EntryNodeX, EntryNodeY), valX, valY, currentX, currentY);
             insert_sll(p2r, nodeCost(valX, valY, ExitNodeX, ExitNodeY, EntryNodeX, EntryNodeY), valX, valY);
         }
+
         if(visual)
         {
             clear();
             usleep(100000);
             printGrid(height, width);
         }
-
+        
         
     }
 
@@ -91,34 +92,3 @@ int Astar(int EntryNodeX, int EntryNodeY, int ExitNodeX, int ExitNodeY, int heig
     }
 }
 
-// int main()
-// {
-    
-//     setlocale(LC_CTYPE, "");
-    
-
-//     int EntryNodeX, EntryNodeY, ExitNodeX, ExitNodeY, currentX, currentY, valX, valY;
-//     int height = 20;
-//     int width = 20;
-//     makeGrid(height, width);
-//     EntryNodeX = 4;
-//     EntryNodeY = 3;
-//     ExitNodeX = 16;
-//     ExitNodeY = 17;
-//     ranArray[EntryNodeX][EntryNodeY].type = enterSymbol;
-//     ranArray[ExitNodeX][ExitNodeY].type = exitSymbol;
-
-//     if(Astar(EntryNodeX, EntryNodeY, ExitNodeX, ExitNodeY, height, width))
-//     {
-//         clear();
-//         wprintf(L"Path Not found\n");
-//     }
-//     else
-//     {
-//         traceBack(height, width, ExitNodeX, ExitNodeY, EntryNodeX, EntryNodeY, 1);
-//         wprintf(L"Path Found!\n");
-//     }
-
-//     freeGrid(height, width);
-//     return 0;
-// }

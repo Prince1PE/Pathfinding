@@ -7,8 +7,10 @@
 //Add other pathfinding algorithms
 //Find a better way of counting lines in a file
 //Check to see if imported files are suitable
-//Astar not always choosing the most optimal path
 //Add a watermark or something
+
+//Impliment bfs
+//Impliment dfs
 
 static struct Node **ranArray;  //https://www.geeksforgeeks.org/dynamically-allocate-2d-array-c/amp/ --Makes an array of nodes
 int screen_height, screen_width;
@@ -236,7 +238,7 @@ int Play(int height, int width)
                                 gettimeofday(&stop, NULL);
                                 time_taken = (double) (stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
                                 wprintf(L"%s Optimal Path Found!!!\n", changeColours(3));
-                                wprintf(L"This took %f seconds\n", time_taken);
+                                printTime(time_taken);
                             }
                             else
                             {
@@ -278,7 +280,7 @@ int Play(int height, int width)
                         clear();
                         printGrid(height, width);
                         wprintf(L"%s Optimal Path Found!!!\n", changeColours(3));
-                        wprintf(L"This took %f seconds\n", time_taken);
+                        printTime(time_taken);
                     }
                     getchar();
                     resetGrid(height, width);
@@ -403,6 +405,7 @@ int Play(int height, int width)
 
             else if (!strcmp(command[0], "import"))
             {
+                int fileHeight, fileWidth;
                 if (counter > 2)
                 {
                     wprintf(L"This command only takes 1 argument");
@@ -442,21 +445,33 @@ int Play(int height, int width)
                         {
                             if (!strcmp(command[1], dir->d_name))
                             {
-                                freeGrid(height, width);
                                 char readfile[120] = "./examples/";
                                 strcat(readfile, command[1]);
-                                wprintf(L"%s\n", readfile);
-                                height = countlines(readfile) - 1;
-                                width = countColumns(readfile);
-                                makeGrid(height, width);
-                                importGrid(height, width, readfile);
-                                x = width - 2;
-                                y = height - 2;
-                                clear();
-                                printGrid(height, width);
-                                wprintf(L"%s File has been successfully imorted", changeColours(4));
-                                gotoxy(x,y);
-                                found = true;
+                                fileHeight = countlines(readfile) - 1;
+                                fileWidth = countColumns(readfile);
+                                if(fileHeight < screen_height || fileWidth < screen_width)
+                                {
+                                    wprintf(L"You're screen isn't big enough for this file\n");
+                                    wprintf(L"%i,%i\n", fileHeight, fileWidth);
+                                    found = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    height = fileHeight;
+                                    width = fileWidth;
+                                    freeGrid(height, width);
+                                    makeGrid(height, width);
+                                    importGrid(height, width, readfile);
+                                    wprintf(L"%s\n", readfile);
+                                    x = width - 2;
+                                    y = height - 2;
+                                    clear();
+                                    printGrid(height, width);
+                                    wprintf(L"%s File has been successfully imported", changeColours(4));
+                                    gotoxy(x,y);
+                                    found = true;
+                                }
                             }
                         }
                     }
@@ -542,7 +557,7 @@ int Play(int height, int width)
             printGrid(height, width);
             gotoxy(x, y);
         }        
-        else if (keystroke == 'q' || keystroke == 'Q') //Quits the program
+        else if (keystroke == 'q' || keystroke == 'Q' ) //Quits the program
         {
              while(true)
             {
