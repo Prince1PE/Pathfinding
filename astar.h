@@ -11,6 +11,9 @@
 void printGrid(int height, int width);
 void refresh(int height, int width);
 
+wchar_t whiteBlock;
+
+
 int nodeCost(int ValX, int ValY, int DestX, int DestY, int SourceX, int SourceY)
 {
     
@@ -35,7 +38,7 @@ int Astar(int EntryNodeX, int EntryNodeY, int ExitNodeX, int ExitNodeY, int heig
         pop_sll(p2r);
         valX = currentX - 1;
         valY = currentY;        
-        if (ranArray[valX][valY].visited == false)
+        if (ranArray[valX][valY].visited == false && ranArray[valX][valY].type != whiteBlock)
         {
             setNode(nodeCost(valX, valY, ExitNodeX, ExitNodeY, EntryNodeX, EntryNodeY), valX, valY, currentX, currentY);
             insert_sll(p2r, nodeCost(valX, valY, ExitNodeX, ExitNodeY, EntryNodeX, EntryNodeY), valX, valY);
@@ -43,7 +46,7 @@ int Astar(int EntryNodeX, int EntryNodeY, int ExitNodeX, int ExitNodeY, int heig
         }
         valX = currentX;
         valY = currentY + 1;
-        if (ranArray[valX][valY].visited == false)
+        if (ranArray[valX][valY].visited == false && ranArray[valX][valY].type != whiteBlock)
         {
             setNode(nodeCost(valX, valY, ExitNodeX, ExitNodeY, EntryNodeX, EntryNodeY), valX, valY, currentX, currentY);
             insert_sll(p2r, nodeCost(valX, valY, ExitNodeX, ExitNodeY, EntryNodeX, EntryNodeY), valX, valY);
@@ -51,7 +54,7 @@ int Astar(int EntryNodeX, int EntryNodeY, int ExitNodeX, int ExitNodeY, int heig
         }
         valX = currentX + 1;
         valY = currentY;
-        if (ranArray[valX][valY].visited == false)
+        if (ranArray[valX][valY].visited == false && ranArray[valX][valY].type != whiteBlock)
         {
             setNode(nodeCost(valX, valY, ExitNodeX, ExitNodeY, EntryNodeX, EntryNodeY), valX, valY, currentX, currentY);
             insert_sll(p2r, nodeCost(valX, valY, ExitNodeX, ExitNodeY, EntryNodeX, EntryNodeY), valX, valY);
@@ -59,7 +62,7 @@ int Astar(int EntryNodeX, int EntryNodeY, int ExitNodeX, int ExitNodeY, int heig
         }
         valX = currentX;
         valY = currentY - 1;
-        if (ranArray[valX][valY].visited == false)
+        if (ranArray[valX][valY].visited == false && ranArray[valX][valY].type != whiteBlock)
         {
             setNode(nodeCost(valX, valY, ExitNodeX, ExitNodeY, EntryNodeX, EntryNodeY), valX, valY, currentX, currentY);
             insert_sll(p2r, nodeCost(valX, valY, ExitNodeX, ExitNodeY, EntryNodeX, EntryNodeY), valX, valY);
@@ -70,11 +73,7 @@ int Astar(int EntryNodeX, int EntryNodeY, int ExitNodeX, int ExitNodeY, int heig
             usleep(100000);
             printGrid(height, width);
         }
-        else
-        {
-            printGrid(height, width);
-            refresh(height, width);
-        }
+
         
     }
 
@@ -84,7 +83,11 @@ int Astar(int EntryNodeX, int EntryNodeY, int ExitNodeX, int ExitNodeY, int heig
     }
     else
     {
-    return 0;
+        while(!isEmpty_sll(p2r))
+        {
+            pop_sll(p2r);
+        }
+        return 0;
     }
 }
 

@@ -101,7 +101,7 @@ int Play(int height, int width)
         }    
         else if (keystroke == ' ')//Places Block
         {
-            if (ranArray[valx][valy].type == '_')
+            if (ranArray[valx][valy].type == underscore)
             {
                 ranArray[valx][valy].type = whiteBlock;
                 ranArray[valx][valy].visited = true;
@@ -113,7 +113,7 @@ int Play(int height, int width)
             else
             {
                 ranArray[valx][valy].colour = 8;
-                ranArray[valx][valy].type = '_';
+                ranArray[valx][valy].type = underscore;
                 ranArray[valx][valy].visited = false;
                 ranArray[valx][valy].distance = -1;
                 clear();
@@ -260,16 +260,25 @@ int Play(int height, int width)
                 
                 else if(!strcmp(command[1], "astar"))
                 {
+                    struct timeval start, stop;
+                    double time_taken = 0;
+                    gettimeofday(&start, NULL);
                     if(Astar(startNodeX, startNodeY, exitNodeX, exitNodeY, height, width, visual))
                     {
                         clear();
                         printGrid(height, width);
                         wprintf(L"Path Not found\n");
+                        
                     }
                     else
                     {
-                        traceBack(height, width, exitNodeX, exitNodeY, startNodeX, startNodeY, 1);
-                        wprintf(L"Path Found!\n");
+                        traceBack(height, width, exitNodeX, exitNodeY, startNodeX, startNodeY, visual);
+                        gettimeofday(&stop, NULL);
+                        time_taken = (double) (stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
+                        clear();
+                        printGrid(height, width);
+                        wprintf(L"%s Optimal Path Found!!!\n", changeColours(3));
+                        wprintf(L"This took %f seconds\n", time_taken);
                     }
                     getchar();
                     resetGrid(height, width);
@@ -469,6 +478,7 @@ int Play(int height, int width)
                 if (counter > 1)
                 {
                     wprintf(L"This command takes no arguments\n");
+                    continue;
                 }
                 visual = !visual;
                 if (visual)

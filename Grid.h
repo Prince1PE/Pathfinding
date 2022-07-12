@@ -25,7 +25,7 @@ wchar_t rightHalfBlock = 0x2590;    // ▐
 wchar_t leftHalfBlock = 0x258C;     // ▌
 wchar_t lowerHalfBlock = 0x2584;    // ▄
 wchar_t underscore = '_';
-wchar_t whiteBlock = 0x2586;        // ⊞
+wchar_t whiteBlock = 0x2588;        // ⊞
 wchar_t enterSymbol = 0x2386;       // ⎆
 wchar_t exitSymbol = 0x23CE;        // ⏎
 
@@ -91,7 +91,7 @@ void refresh(int height, int width)
         {
             if (ranArray[i][j].dirty == true)
             {
-                gotoxy(i * 2, j * 2 + 1);
+                gotoxy(i * 2, j + 1);
                 wprintf(L"%s%lc", changeColours(ranArray[i][j].colour), ranArray[i][j].type);
                 ranArray[i][j].dirty = false;
             }
@@ -128,38 +128,7 @@ void printGrid(int height, int width)
     }
 }
 
-bool mapAdjacent(int height, int width,int startNodeX, int startNodeY, int exitNodeX, int exitNodeY, bool visual)
-{
-    int counter = 1;
-    int x,y;
-    clear();
-    int valx, valy;
-    int currentCovered, pastCovered;
-    
-    ranArray[startNodeX][startNodeY].visited = true;
-    ranArray[startNodeX][startNodeY].distance = 0;
-        while(ranArray[exitNodeX][exitNodeY].visited == false)
-        {
-            currentCovered = bruteForce(height, width, startNodeX, startNodeY, counter, currentCovered);
-            if (currentCovered == pastCovered)
-            {
-                return 0;
-            }
-            else{pastCovered = currentCovered;}
-            counter ++;
-            if(visual)
-            {
-                clear();
-                printGrid(height, width);
-                usleep(100000);
-            }
-            else
-            {
-                refresh(height, width);
-            }
-        }
-        return 1; 
-}
+
 
 void traceBack(int height, int width, int exitNodeX, int exitNodeY, int startNodeX, int startNodeY, bool visual)
 {

@@ -1,5 +1,12 @@
 #include "class.h"
 
+#define clear() wprintf(L"\e[1;1H\e[2J")
+
+void printGrid(int height, int width);
+void refresh(int height, int width);
+
+
+
 void setNode(int counter, int x, int y, int i, int j) //Changes the values of the node respectfully
     {
         ranArray[x][y].dirty = true;        //Used for refresh
@@ -49,6 +56,7 @@ int bruteForce(int height, int width,int startNodeX, int startNodeY, int counter
                     setNode(counter, x, y, i, j);
                     checkCount++;
                 }
+                /*Uncomment the below for access to diagonal movement*/
                 // x = i - 1;
                 // y = j + 1;
                 // if (ranArray[x][y].visited == false)//Up/Right
@@ -81,4 +89,37 @@ int bruteForce(int height, int width,int startNodeX, int startNodeY, int counter
         }
     }
     return checkCount;  //Used to see whether or not there is a possible path
+}
+
+bool mapAdjacent(int height, int width,int startNodeX, int startNodeY, int exitNodeX, int exitNodeY, bool visual)
+{
+    int counter = 1;
+    int x,y;
+    clear();
+    int valx, valy;
+    int currentCovered, pastCovered;
+    
+    ranArray[startNodeX][startNodeY].visited = true;
+    ranArray[startNodeX][startNodeY].distance = 0;
+        while(ranArray[exitNodeX][exitNodeY].visited == false)
+        {
+            currentCovered = bruteForce(height, width, startNodeX, startNodeY, counter, currentCovered);
+            if (currentCovered == pastCovered)
+            {
+                return 0;
+            }
+            else{pastCovered = currentCovered;}
+            counter ++;
+            if(visual)
+            {
+                clear();
+                printGrid(height, width);
+                usleep(100000);
+            }
+            else
+            {
+                refresh(height, width);
+            }
+        }
+        return 1; 
 }
