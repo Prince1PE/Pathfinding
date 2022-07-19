@@ -1,3 +1,6 @@
+#ifndef DFSMaze
+#define DFSMaze
+
 #include <stdio.h>
 #include <string.h>
 #include <wchar.h>
@@ -39,7 +42,7 @@ void draw(int height, int width, int stackSize, int stack[stackSize][2])
         ranX = rand()%((height+1)-2) + 1;
         ranY = rand()%((width +1)-2) + 1;
     }
-    push(ranX, ranY, stackSize, stack, &top);
+    pushToStack(ranX, ranY, stackSize, stack, &top);
 }
 
 void shuffle(int *array, size_t n) {    //Shuffles the array
@@ -76,10 +79,11 @@ bool mapNeighbours(int height, int width, int stackSize, int stack[stackSize][2]
             y = nodeY - 2;
             if (ranArray[x][y].visited == false && y > 0 && turn == 1)//left
             {
-                ranArray[x][y].parentNode[0] = nodeX;// The parent node being the wall between the two spaces
-                ranArray[x][y].parentNode[1] = nodeY - 1;
-                push(x, y, stackSize, stack, &top); 
-                ranArray[x][y].visited = true;
+                // ranArray[x][y].parentNode[0] = nodeX;// The parent node being the wall between the two spaces
+                // ranArray[x][y].parentNode[1] = nodeY - 1;
+                pushToStack(x, y, stackSize, stack, &top); 
+                setNode(0, x, y, nodeX, nodeY - 1);
+                ranArray[x][y].colour = 8;
                 mapped = true;
             }
 
@@ -87,10 +91,11 @@ bool mapNeighbours(int height, int width, int stackSize, int stack[stackSize][2]
             y = nodeY + 2;
             if (ranArray[x][y].visited == false && y < width - 1 && turn == 2)//right
             {
-                ranArray[x][y].parentNode[0] = nodeX;
-                ranArray[x][y].parentNode[1] = nodeY + 1;
-                push(x, y, stackSize, stack, &top);
-                ranArray[x][y].visited = true;
+                // ranArray[x][y].parentNode[0] = nodeX;
+                // ranArray[x][y].parentNode[1] = nodeY + 1;
+                pushToStack(x, y, stackSize, stack, &top);
+                setNode(0, x, y, nodeX, nodeY + 1);
+                ranArray[x][y].colour = 8;
                 mapped = true;
             }
             
@@ -98,10 +103,11 @@ bool mapNeighbours(int height, int width, int stackSize, int stack[stackSize][2]
             y = nodeY;
             if (x > 0 && ranArray[x][y].visited == false && turn == 3)//Up
             {
-                ranArray[x][y].parentNode[0] = nodeX - 1;
-                ranArray[x][y].parentNode[1] = nodeY;
-                push(x, y, stackSize, stack, &top);
-                ranArray[x][y].visited = true;
+                // ranArray[x][y].parentNode[0] = nodeX - 1;
+                // ranArray[x][y].parentNode[1] = nodeY;
+                setNode(0, x, y, nodeX - 1, nodeY);
+                pushToStack(x, y, stackSize, stack, &top);
+                ranArray[x][y].colour = 8;
                 mapped = true;
                 }
             
@@ -109,10 +115,11 @@ bool mapNeighbours(int height, int width, int stackSize, int stack[stackSize][2]
             y = nodeY;
             if (x < height - 1 && ranArray[x][y].visited == false && turn == 4)//Down
             {
-                ranArray[x][y].parentNode[0] = nodeX + 1;
-                ranArray[x][y].parentNode[1] = nodeY;
-                push(x, y, stackSize, stack, &top);
-                ranArray[x][y].visited = true;
+                // ranArray[x][y].parentNode[0] = nodeX + 1;
+                // ranArray[x][y].parentNode[1] = nodeY;
+                setNode(0, x, y, nodeX + 1, nodeY);
+                pushToStack(x, y, stackSize, stack, &top);
+                ranArray[x][y].colour = 8;
                 mapped = true;
             }
     }
@@ -126,3 +133,4 @@ void makePath(int stackSize, int stack[stackSize][2])//this essneitally just cha
     ranArray[x][y].type = '_';
 }
 
+#endif

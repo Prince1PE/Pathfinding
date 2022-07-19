@@ -1,3 +1,6 @@
+#ifndef STACK
+#define STACK
+
 #include <stdio.h>
 #include <wchar.h>
 #include <stdbool.h>
@@ -8,7 +11,7 @@ int stackEmpty(int stackSize, int stack[stackSize][2], int *top)
     else {return 0;}
 }
 
-void push(int elementX, int elementY, int stackSize ,int stack[stackSize][2], int *top)
+void pushToStack(int elementX, int elementY, int stackSize ,int stack[stackSize][2], int *top)
 {
     if(*top == -1)  
     {
@@ -28,7 +31,7 @@ void push(int elementX, int elementY, int stackSize ,int stack[stackSize][2], in
     }
 }
 
-void pop(int stackSize,int stack[stackSize][2], int *top)
+void popFromStack(int stackSize,int stack[stackSize][2], int *top)
 {
     if(*top == -1)//Stops user from popping from the stack if its empty
     {             //This should never happen, because we always double check if the stack is empty before popping from it
@@ -44,3 +47,5 @@ void pop(int stackSize,int stack[stackSize][2], int *top)
     }
     }
 }
+
+#endif

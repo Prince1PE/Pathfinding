@@ -8,9 +8,9 @@
 //Find a better way of counting lines in a file
 //Check to see if imported files are suitable
 //Add a watermark or something
-
+//Add security checking for valid files
 //Impliment bfs
-//Impliment dfs
+//Impliment dfs - if path not found
 
 static struct Node **ranArray;  //https://www.geeksforgeeks.org/dynamically-allocate-2d-array-c/amp/ --Makes an array of nodes
 int screen_height, screen_width;
@@ -136,6 +136,10 @@ int Play(int height, int width)
                 wprintf(L"The following commands can be accessed using the '/' command\n");
                 wprintf(L"➢ use --This takes the argument of the algorithm you want to run\n");
                 wprintf(L"      -bruteforce --This runs the bruteforce method\n");
+                wprintf(L"      -astar --This runs the astar algorithm\n");
+                wprintf(L"      -dfs --This runs the dfs algorithm'n");
+
+
                 wprintf(L"➢ clear --This clears the screen\n");
                 wprintf(L"➢ resize --This can take 2 arguments, height and width in order to resize the grid\n");
                 wprintf(L"➢ export --This takes one filename as an argument, don't enter a file extension");
@@ -212,45 +216,43 @@ int Play(int height, int width)
                 command[counter] = word;
                 counter++;
                 word = strtok(NULL, " ");
+                // wprintf(L"%s\n", word);
+                // sleep(1);
             }
-
-            
-            
             if (!strcmp(command[0], "use"))
             {
-                if(counter > 2)
+                if(counter > 2 )
                 {
-                    wprintf(L"This command only takes 1 argument 'bruteforce {algorithm}'\n");
+                    wprintf(L"This command takes 1 argument 'bruteforce {algorithm}'\n");
                     continue;
                 }
+                
                 if (!strcmp(command[1], "bruteforce"))
                 {
-                    if(checkCondition(height, width, enterSymbol, exitSymbol))
+                    if(checkCondition(height, width))
+                    {
+                        struct timeval start, stop;
+                        double time_taken = 0;
+                        gettimeofday(&start, NULL);
+                        if(mapAdjacent(height, width, startNodeX, startNodeY, exitNodeX, exitNodeY, visual))
                         {
-                            struct timeval start, stop;
-                            double time_taken = 0;
-                            gettimeofday(&start, NULL);
-                            if(mapAdjacent(height, width, startNodeX, startNodeY, exitNodeX, exitNodeY, visual))
-                            {
-                                traceBack(height, width, exitNodeX, exitNodeY, startNodeX, startNodeY, visual);
-                                clear();
-                                printGrid(height, width);
-                                gettimeofday(&stop, NULL);
-                                time_taken = (double) (stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
-                                wprintf(L"%s Optimal Path Found!!!\n", changeColours(3));
-                                printTime(time_taken);
-                            }
-                            else
-                            {
-                                clear();
-                                printGrid(height, width);
-                                wprintf(L"%s PATH NOT FOUND", changeColours(2));
-                            }
-                                // freeGrid(height, width);
-                                // makeGrid(height, width);
-                                getchar();
-                                resetGrid(height, width);
+                            traceBack(height, width, exitNodeX, exitNodeY, startNodeX, startNodeY, visual);
+                            clear();
+                            printGrid(height, width);
+                            gettimeofday(&stop, NULL);
+                            time_taken = (double) (stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
+                            wprintf(L"%s Optimal Path Found!!!\n", changeColours(3));
+                            printTime(time_taken);
                         }
+                        else
+                        {
+                            clear();
+                            printGrid(height, width);
+                            wprintf(L"%s PATH NOT FOUND", changeColours(2));
+                        }
+                            getchar();
+                            resetGrid(height, width);
+                    }
                     else
                     {
                         clear();
@@ -258,33 +260,105 @@ int Play(int height, int width)
                         wprintf(L"%s Enter an exit & entry node\n", changeColours(4));
                     }
                     gotoxy(x, y);
-                    }
+                }
                 
                 else if(!strcmp(command[1], "astar"))
                 {
-                    struct timeval start, stop;
-                    double time_taken = 0;
-                    gettimeofday(&start, NULL);
-                    if(Astar(startNodeX, startNodeY, exitNodeX, exitNodeY, height, width, visual))
+                    if(checkCondition(height, width))
                     {
-                        clear();
-                        printGrid(height, width);
-                        wprintf(L"Path Not found\n");
-                        
+                        struct timeval start, stop;
+                        double time_taken = 0;
+                        gettimeofday(&start, NULL);
+                        if(Astar(startNodeX, startNodeY, exitNodeX, exitNodeY, height, width, visual))
+                        {
+                            clear();
+                            printGrid(height, width);
+                            wprintf(L"Path Not found\n");
+                            
+                        }
+                        else
+                        {
+                            traceBack(height, width, exitNodeX, exitNodeY, startNodeX, startNodeY, visual);
+                            gettimeofday(&stop, NULL);
+                            time_taken = (double) (stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
+                            clear();
+                            printGrid(height, width);
+                            wprintf(L"%s Optimal Path Found!!!\n", changeColours(3));
+                            printTime(time_taken);
+                        }
+                        getchar();
+                        resetGrid(height, width);
                     }
                     else
                     {
-                        traceBack(height, width, exitNodeX, exitNodeY, startNodeX, startNodeY, visual);
-                        gettimeofday(&stop, NULL);
-                        time_taken = (double) (stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
                         clear();
                         printGrid(height, width);
-                        wprintf(L"%s Optimal Path Found!!!\n", changeColours(3));
-                        printTime(time_taken);
+                        wprintf(L"%s Enter an exit & entry Node", changeColours(4));
+                    }
+                }
+                
+                else if(!strcmp(command[1], "dfs"))
+                {
+                    if(checkCondition(height, width))
+                    {
+                        int currentCovered;
+                        int pastCovered;
+                        int stackSize = height * width;
+                        int stack[stackSize][2];
+                        pushToStack(startNodeX, startNodeY, stackSize, stack, &top);
+                        
+                        // while(!stackEmpty(stackSize, stack, &top) && ranArray[exitNodeX][exitNodeY].visited == false)
+                        // {  
+                        //     usleep(100000);
+                        //     clear();
+                        //     printGrid(height, width);
+                        //     dfsSearch(height, width, startNodeX, startNodeY, counter, currentCovered, stackSize, stack, top);
+                        // }
+
+                        dfsSearch(height, width, startNodeX, startNodeY, exitNodeX, exitNodeY, stackSize, stack, top);
+                        if(ranArray[exitNodeX][exitNodeY].visited == true)
+                        {
+                            traceBack(height, width, exitNodeX, exitNodeY, startNodeX, startNodeY, visual);
+                        }
+                        else
+                        {
+                            clear();
+                            printGrid(height, width);
+                            wprintf(L"Path Not found!!\n");
+                        }
+                        getchar();
+                        resetGrid(height, width);
+                        
+                    }
+
+                }
+                
+                else if(!strcmp(command[1], "bfs"))
+                {
+                    queue *q;
+                    q = malloc(sizeof(queue));
+                    initialize(q);
+                    enqueue(q, startNodeX, startNodeY);
+                    
+                    while(!isempty(q) && ranArray[exitNodeX][exitNodeY].visited == false)
+                    {
+                        ranArray[startNodeX][startNodeY].colour = 8;
+                        bfsSearch(q);
+                        if(visual)
+                        {
+                            clear();
+                            printGrid(height, width);
+                            usleep(100000);
+                        }
+                    }
+                    if (ranArray[exitNodeX][exitNodeY].visited)
+                    {
+                        traceBack(height, width, exitNodeX, exitNodeY, startNodeX, startNodeY, visual);
                     }
                     getchar();
                     resetGrid(height, width);
                 }
+
                 else
                 {
                     clear();
@@ -508,14 +582,14 @@ int Play(int height, int width)
             
             else if (!strcmp(command[0], "generate"))
             {
-                if (!strcmp(command[1], "bfs"))
+                if (!strcmp(command[1], "dfs"))
                 {
                     clear();
-                    bfsFunc(height, width, visual);
+                    dfsFunc(height, width, visual);
                 }
                 else
                 {
-                    wprintf(L"That Algorithm isn't found, try typing bfs\n");
+                    wprintf(L"That Algorithm isn't found, try typing dfs\n");
                 }
             }
             
@@ -592,8 +666,8 @@ int Play(int height, int width)
 
 int main(int argc, char* argv[])    //Takes command line input
 {
-    int x = 10; //Sets default values
-    int y = 10;
+    int x = 11; //Sets default values
+    int y = 11;
     system("wmctrl -F -r :ACTIVE: -b add,fullscreen");// Sets the terminal to fullscreen
     usleep(50000);
     struct winsize window;

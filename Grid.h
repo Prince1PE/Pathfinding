@@ -12,11 +12,13 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "classes/node.h"
 #include "Algorithms/bruteforce.h"
 #include "Algorithms/astar.h"
-#include "classes/node.h"
+#include "Algorithms/dfsPathfinding.h"
+#include "Algorithms/bfsPathfinding.h"
+#include "dfsMazeGeneration.h"
 #include "FileIO.h"
-#include "bfs.h"
 
 //Defining a bunch of unicode Charecters
 wchar_t upperHalfBlock = 0x2580;    // ▀
@@ -157,6 +159,8 @@ void traceBack(int height, int width, int exitNodeX, int exitNodeY, int startNod
             refresh(height, width);
         }
     }
+    clear();
+    printGrid(height, width);
 }
 
 void makeGrid(int height, int width)
@@ -208,14 +212,14 @@ void freeGrid(int height, int width)
     free(ranArray);
 }
 
-bool checkCondition(int height, int width, wchar_t entryNode, wchar_t exitNode)    //Checks for entry and exit nodes within the program
+bool checkCondition(int height, int width)    //Checks for entry and exit nodes within the program
 {
     int check = 0;
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
         {
-            if (ranArray[i][j].type == entryNode || ranArray[i][j].type == exitNode)
+            if (ranArray[i][j].type == enterSymbol || ranArray[i][j].type == exitSymbol)
             {
                 check++;
             }
@@ -333,16 +337,16 @@ void resetGrid(int height, int width)
             }
         }
     }
-    
     clear();
     printGrid(height, width);
 }
 
-int bfsFunc(int height, int width, bool visual)
+int dfsFunc(int height, int width, bool visual)
 {
     int stackSize = height * width;
     int stack[stackSize][2];
     draw(height, width, stackSize, stack);
+    
     while(!stackEmpty(stackSize, stack, &top))
     {
         if(mapNeighbours(height, width, stackSize, stack))
@@ -353,7 +357,7 @@ int bfsFunc(int height, int width, bool visual)
         {
             ranArray[ranArray[stack[top][0]][stack[top][1]].parentNode[0]]
             [ranArray[stack[top][0]][stack[top][1]].parentNode[1]].type = '_';
-            pop(stackSize, stack, &top);
+            popFromStack(stackSize, stack, &top);
         }
         if(visual)
         {

@@ -1,3 +1,6 @@
+#ifndef bruteforce
+#define bruteforce
+
 #include "../classes/node.h"
 
 #define clear() wprintf(L"\e[1;1H\e[2J")
@@ -116,10 +119,11 @@ bool mapAdjacent(int height, int width,int startNodeX, int startNodeY, int exitN
                 printGrid(height, width);
                 usleep(100000);
             }
-            else
-            {
-                refresh(height, width);
-            }
+            // else
+            // {
+            //     refresh(height, width);
+            // }
         }
         return 1; 
 }
+#endif

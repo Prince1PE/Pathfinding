@@ -2,6 +2,7 @@ Compile using gcc
 ./a.out to run, arguments are optional to set height and width
 ./a.out MAX_HEIGHT MAX_WIDTH in order to set the grid to the max possible value for your screen size
 For help on commands, simply click h
+You may experience jitter on some laptops or slower computers if you use a big grid
 
 Talk about commands the user can use
 Talk about the algorithms used and how they work

@@ -129,6 +129,4 @@ int listDirectory(char* filename)
 //         return 1;
 //     }
 //     return 0;
-
-    
 // }
