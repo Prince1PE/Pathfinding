@@ -3,14 +3,10 @@
 #include <sys/ioctl.h>
 
 //TODO
-//Add other maze generation algorithms
-//Add other pathfinding algorithms
 //Find a better way of counting lines in a file
 //Check to see if imported files are suitable
 //Add a watermark or something
-//Add security checking for valid files
-//Impliment bfs
-//Impliment dfs - if path not found
+//Impliment bfs - If path not found
 
 static struct Node **ranArray;  //https://www.geeksforgeeks.org/dynamically-allocate-2d-array-c/amp/ --Makes an array of nodes
 int screen_height, screen_width;
@@ -27,7 +23,7 @@ int Play(int height, int width)
     srand(time(NULL));
 
     int colour = 8;             //Sets the default colour to white
-    setlocale(LC_CTYPE, "");    //Allows you to enter unicode charecters
+    setlocale(2, "");    //Allows you to enter unicode charecters
 
     int keystroke;
     static struct termios oldt, newt;   // Initialises old and new terminal settings
@@ -50,6 +46,28 @@ int Play(int height, int width)
         valx = y - 1; //Dont question it
         valy = x / 2;
         keystroke = getchar();
+
+        if(keystroke == '\033')
+        {
+            getchar();
+            switch (getchar())
+            {
+            case 'A':
+                keystroke = 'w';
+                break;
+            case 'B':
+                keystroke = 's';
+                break;
+            case 'C':
+                keystroke = 'd';
+                break;
+            case 'D':
+                keystroke = 'a';
+                break;
+            default:
+                break;
+            }
+        }
         if (keystroke == 'w' || keystroke == 'W')//Move up
         {
             if (y == 2)
@@ -60,7 +78,7 @@ int Play(int height, int width)
             y --;
             gotoxy(x,y);
         }
-        else if (keystroke == 'a' || keystroke == 'A')//Move left
+        else if (keystroke == 'a' || keystroke == 'A' )//Move left
         {
             if (x == 2)
             {
@@ -70,7 +88,7 @@ int Play(int height, int width)
             x -= 2;
             gotoxy(x,y);
         }
-        else if (keystroke == 's' || keystroke == 'S')//Move Down
+        else if (keystroke == 's' || keystroke == 'S' )//Move Down
         {
             if (y == height - 1)
             {
@@ -81,7 +99,7 @@ int Play(int height, int width)
             y ++;
             gotoxy(x,y);
         }
-        else if (keystroke == 'd' || keystroke == 'D')//Move Right
+        else if (keystroke == 'd' || keystroke == 'D' )//Move Right
         {
             if (x >= (width * 2) - 4)
             {
@@ -301,63 +319,102 @@ int Play(int height, int width)
                 {
                     if(checkCondition(height, width))
                     {
-                        int currentCovered;
-                        int pastCovered;
+                        struct timeval start, stop;
+                        double time_taken = 0;
+                        gettimeofday(&start, NULL);
                         int stackSize = height * width;
                         int stack[stackSize][2];
                         pushToStack(startNodeX, startNodeY, stackSize, stack, &top);
-                        
-                        // while(!stackEmpty(stackSize, stack, &top) && ranArray[exitNodeX][exitNodeY].visited == false)
-                        // {  
-                        //     usleep(100000);
-                        //     clear();
-                        //     printGrid(height, width);
-                        //     dfsSearch(height, width, startNodeX, startNodeY, counter, currentCovered, stackSize, stack, top);
-                        // }
-
-                        dfsSearch(height, width, startNodeX, startNodeY, exitNodeX, exitNodeY, stackSize, stack, top);
+                        dfsSearch(height, width, startNodeX, startNodeY, exitNodeX, exitNodeY, stackSize, stack, top, visual);
                         if(ranArray[exitNodeX][exitNodeY].visited == true)
                         {
                             traceBack(height, width, exitNodeX, exitNodeY, startNodeX, startNodeY, visual);
+                            clear();
+                            printGrid(height, width);
+                            gettimeofday(&stop, NULL);
+                            time_taken = (double) (stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
+                            wprintf(L"%s Found a path i guess?\n", changeColours(3));
+                            printTime(time_taken);
                         }
                         else
                         {
                             clear();
                             printGrid(height, width);
-                            wprintf(L"Path Not found!!\n");
+                            wprintf(L"%s Path Not found!!\n", changeColours(2));
                         }
                         getchar();
                         resetGrid(height, width);
-                        
                     }
-
+                    else
+                    {
+                        clear();
+                        printGrid(height, width);
+                        wprintf(L"%s Enter an exit & entry node\n", changeColours(4));
+                    }
+                    gotoxy(x, y);
                 }
                 
+                /* BFS -- Slow and inefficent  
                 else if(!strcmp(command[1], "bfs"))
                 {
-                    queue *q;
-                    q = malloc(sizeof(queue));
-                    initialize(q);
-                    enqueue(q, startNodeX, startNodeY);
-                    
-                    while(!isempty(q) && ranArray[exitNodeX][exitNodeY].visited == false)
+                    if(checkCondition(height, width))
                     {
-                        ranArray[startNodeX][startNodeY].colour = 8;
-                        bfsSearch(q);
-                        if(visual)
+                        struct timeval start, stop;
+                        double time_taken = 0;
+                        gettimeofday(&start, NULL);
+                        int currentCovered;
+                        int pastCovered = -1;
+                        
+                        queue *q;
+                        q = malloc(sizeof(queue));
+                        initialize(q);
+                        enqueue(q, startNodeX, startNodeY);
+                        
+                        while(!isempty(q) && ranArray[exitNodeX][exitNodeY].visited == false)
+                        {
+                            ranArray[startNodeX][startNodeY].colour = 8;
+                            bfsSearch(height, width, q, currentCovered);
+                            if(visual)
+                            {
+                                clear();
+                                printGrid(height, width);
+                                wprintf(L"%i, %i\n", currentCovered, pastCovered);
+                                usleep(100000);
+                            }
+                            // if(currentCovered == pastCovered)
+                            // {
+                            //     break;
+                            // }
+                            // else{pastCovered = currentCovered;}
+                        }
+                        if (ranArray[exitNodeX][exitNodeY].visited)
+                        {
+                            traceBack(height, width, exitNodeX, exitNodeY, startNodeX, startNodeY, visual);
+                            gettimeofday(&stop, NULL);
+                            time_taken = (double) (stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
+                            clear();
+                            printGrid(height, width);
+                            wprintf(L"%s Optimal Path Found!!!\n", changeColours(3));
+                            printTime(time_taken);
+                        }
+                        else
                         {
                             clear();
                             printGrid(height, width);
-                            usleep(100000);
+                            wprintf(L"%s PATH NOT FOUND", changeColours(2));
                         }
+                        getchar();
+                        resetGrid(height, width);
                     }
-                    if (ranArray[exitNodeX][exitNodeY].visited)
+                    
+                    else
                     {
-                        traceBack(height, width, exitNodeX, exitNodeY, startNodeX, startNodeY, visual);
+                        clear();
+                        printGrid(height, width);
+                        wprintf(L"%s Enter an exit & entry node\n", changeColours(4));
                     }
-                    getchar();
-                    resetGrid(height, width);
                 }
+                */
 
                 else
                 {
@@ -585,7 +642,20 @@ int Play(int height, int width)
                 if (!strcmp(command[1], "dfs"))
                 {
                     clear();
+                    freeGrid(height, width);
+                    makeGrid(height, width);
                     dfsFunc(height, width, visual);
+                }
+                else if(!strcmp(command[1], "kruskal"))
+                {
+                    clear();
+                    freeGrid(height, width);
+                    makeGrid(height, width);
+                    int maxEdges = (height * width) / 2;
+                    int edges[maxEdges][2];
+                    int edgeCount = makeEdges(height, width, maxEdges, edges);
+                    joinPath(maxEdges, edges, edgeCount, height, width, visual);
+                    resetGrid(height, width);
                 }
                 else
                 {

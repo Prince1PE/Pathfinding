@@ -16,8 +16,9 @@
 #include "Algorithms/bruteforce.h"
 #include "Algorithms/astar.h"
 #include "Algorithms/dfsPathfinding.h"
-#include "Algorithms/bfsPathfinding.h"
-#include "dfsMazeGeneration.h"
+// #include "Algorithms/bfsPathfinding.h"
+#include "MazeGeneration/dfsMazeGeneration.h"
+#include "MazeGeneration/kruskals.h"
 #include "FileIO.h"
 
 //Defining a bunch of unicode Charecters

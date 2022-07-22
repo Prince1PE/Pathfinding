@@ -5,6 +5,8 @@
 #include <wchar.h>
 #include <stdbool.h>
 
+static int top = -1;    
+
 int stackEmpty(int stackSize, int stack[stackSize][2], int *top)
 {
     if(*top == - 1){return 1;}

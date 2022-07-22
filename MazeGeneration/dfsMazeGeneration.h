@@ -11,11 +11,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "Grid.h"
-#include "classes/stack.h"
-#include "classes/node.h"
+#include "../Grid.h"
+#include "../classes/stack.h"
+#include "../classes/node.h"
 
-static int top = -1;    
+
 
 void draw(int height, int width, int stackSize, int stack[stackSize][2])
 {
