@@ -166,6 +166,7 @@ int Play(int height, int width)
                 wprintf(L"➢ visual -- This toggles between speed and visual\n");
                 wprintf(L"➢ Generate -- This allows you to generate a map\n");
                 wprintf(L"      -bfs --Use Breath First Search in order to make a map\n");
+	            wprintf(L"      -kruskal --User kruskals algorithm in order to generate a map");
 
                 wprintf(L"\n\n Click h to exit this menu");
                 help = false;
