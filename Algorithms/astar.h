@@ -2,7 +2,7 @@
 #define ASTAR
 
 #include <stdio.h>
-#include <math.h>
+//#include <math.h>
 #include <stdlib.h>
 
 #include "../Grid.h"
@@ -16,12 +16,34 @@ void refresh(int height, int width);
 
 wchar_t whiteBlock;
 
+double power(double base, double exp)
+{
+    long double result = 1.0;
+    while (exp != 0) {
+        result *= base;
+        --exp;
+    }
+    return result;
+}
+
+double sqrt(double number)
+{
+    float square = number / 2;
+    int temp = 0;
+    while(square != temp)
+    {
+        temp = square;
+        square =  ( number/temp + temp) / 2;
+    }
+    return square;
+}
+
 
 int nodeCost(int ValX, int ValY, int DestX, int DestY, int SourceX, int SourceY)
 {
     
-    int H = sqrt(pow(ValX - DestX, 2));
-    int G = pow(ValY - DestY, 2);
+    int H = sqrt(power(ValX - DestX, 2));
+    int G = power(ValY - DestY, 2);
     return G + H;
 }
 
