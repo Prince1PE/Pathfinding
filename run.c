@@ -726,7 +726,7 @@ int Play(int height, int width)
                 }
                 else
                 {
-                printf("\nThat isn't a valid input\n");
+                wprintf(L"\nThat isn't a valid input\n");
                 }
             }
         }
@@ -781,20 +781,20 @@ int main(int argc, char* argv[])    //Takes command line input
         }
     }
     else if( argc > 3 ) {   
-        printf("Too many arguments supplied.\n");
+        wprintf(L"Too many arguments supplied.\n");
         system("wmctrl -F -r :ACTIVE: -b remove,fullscreen");//Gets rid of the fullscreen
         return -1;
     }
 
     if (x < 5 || y < 5) //Makes sure there values entered are higher than 5
     {                   //This should also capture other invalid inputs
-        printf("You need to put values higher than 5\n");
+        wprintf(L"You need to put values higher than 5\n");
         system("wmctrl -F -r :ACTIVE: -b remove,fullscreen");//Gets rid of the fullscreen
         return -1;
     }
     else if(x > screen_height || y > screen_width)  //Stops you from enterring too high of a value
     {
-        printf("The values you have enterred are too high, %i, %i\n", screen_height, screen_width);
+        wprintf(L"The values you have enterred are too high, %i, %i\n", screen_height, screen_width);
         system("wmctrl -F -r :ACTIVE: -b remove,fullscreen");//Gets rid of the fullscreen        
         return -1;
     }
