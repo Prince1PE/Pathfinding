@@ -24,7 +24,7 @@ void insert_sll(OrderedList **linkp, const int nodeCost, int x, int y)
     
     /* If memory allocated to newnode unsuccessfully */
     if (newnode == NULL) {
-        printf("Not sufficient Memory!\n");
+        wprintf(L"Not sufficient Memory!\n");
         exit(EXIT_FAILURE);
     }
  
@@ -51,25 +51,6 @@ bool isEmpty_sll(OrderedList **linkp)
         return 0;
     }
 }
- 
-void traverse_sll(OrderedList **linkp)
-{
-    OrderedList *current = *linkp;
- 
-    /* traverse the list */
-    if (current == NULL) {
-        printf("\nList is EMPTY.\n");
-    }
-    else {
-        printf("\nList contains values : ");
-        while (current != NULL) {
-            printf("%d ", current->nodeCost);
-            current = current->link;
-       }
-        printf("\n");
-    }
-}
-
 
 void pop_sll(OrderedList **linkp)
 {
