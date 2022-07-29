@@ -23,7 +23,7 @@ void pushToStack(int elementX, int elementY, int stackSize ,int stack[stackSize]
     }
     else if(*top == 0)//Stack is full
     {
-    printf("ERROR: The stack is already full. \n");
+    wprintf(L"ERROR: The stack is already full. \n");
     }
     else
     {
@@ -37,7 +37,7 @@ void popFromStack(int stackSize,int stack[stackSize][2], int *top)
 {
     if(*top == -1)//Stops user from popping from the stack if its empty
     {             //This should never happen, because we always double check if the stack is empty before popping from it
-    printf("ERROR: The stack is empty. \n");
+    wprintf(L"ERROR: The stack is empty. \n");
     }
     
     else{
