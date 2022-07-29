@@ -23,7 +23,7 @@ int Play(int height, int width)
     srand(time(NULL));
 
     int colour = 8;             //Sets the default colour to white
-    setlocale(2, "");    //Allows you to enter unicode charecters
+    setlocale(LC_CTYPE, "");    //Allows you to enter unicode charecters
 
     int keystroke;
     static struct termios oldt, newt;   // Initialises old and new terminal settings
