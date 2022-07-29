@@ -63,11 +63,11 @@ void display(queuedElement *head)
 {
     if(head == NULL)
     {
-        printf("NULL\n");
+        wprintf(L"NULL\n");
     }
     else
     {
-        printf("%d, %d\n", head -> data[0], head ->data[1]);
+        wprintf(L"%d, %d\n", head -> data[0], head ->data[1]);
         display(head->next);
     }
 }
