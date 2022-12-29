@@ -245,6 +245,11 @@ int Play(int height, int width)
                     wprintf(L"This command takes 1 argument 'bruteforce {algorithm}'\n");
                     continue;
                 }
+                else if(counter == 1)
+                {
+                    wprintf(L"Please give me an algorithm, you can find a list of algorithms by clicking h");
+                    continue;
+                }
                 
                 if (!strcmp(command[1], "bruteforce"))
                 {
@@ -443,6 +448,11 @@ int Play(int height, int width)
                 if(counter > 3)
                 {
                     wprintf(L"This command only takes 2 arguments 'resize {height} {width}'");
+                    continue;
+                }
+                else if(counter == 1)
+                {
+                    wprintf(L"This command takes a height argument");
                     continue;
                 }
                 int resizeValueX, resizeValueY;
