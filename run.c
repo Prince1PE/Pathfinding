@@ -219,7 +219,7 @@ int Play(int height, int width)
                 continue;
             }
 
-            if(strlen(buffer) == 100)
+            if(strlen(buffer) == 100 || buffer[0] == ' ')
             {
                 wprintf(L"Stop trying to break the program >:( \n");
                 memset(buffer, 0 , 100);
