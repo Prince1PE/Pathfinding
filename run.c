@@ -593,7 +593,8 @@ int Play(int height, int width)
                                 fileWidth = countColumns(readfile);
                                 if(fileHeight < screen_height || fileWidth < screen_width)
                                 {
-                                    wprintf(L"You're screen isn't big enough for this file\n");
+                                    wprintf(L"There seems to be an error either you're screen isn't big enough for this file or the file is corrupted\n");
+                                    wprintf(L"Below are the sizes required to import the file\n");
                                     wprintf(L"%i,%i\n", fileHeight, fileWidth);
                                     found = true;
                                     break;
